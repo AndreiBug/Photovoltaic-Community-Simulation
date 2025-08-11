@@ -2,6 +2,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
+import numpy as np
 
 ########## Plotarea graficelor ##########
 
@@ -42,8 +43,7 @@ def plot_10min_consumption_for_day(house, target_date):  # Plotare pe zi la inte
         markers = True
     )
     fig.update_layout(xaxis_tickformat = '%H:%M')
-    fig.write_html("Plots/consum_pe_10min_in_zi.html", auto_open = True)
-    fig.show()
+    fig.write_html("Plots/consum_pe_10min_in_zi.html")
 
 def plot_hourly_consumption_for_day(house, target_date):  # Plotare pe zi la interval de o ora pentru o casa
     input_csv = "Database/Consumption.csv"  # Fisierul cu datele de consum
@@ -85,8 +85,7 @@ def plot_hourly_consumption_for_day(house, target_date):  # Plotare pe zi la int
         markers = True
     )
     fig.update_layout(xaxis_tickformat = '%H:%M')
-    fig.write_html("Plots/consum_pe_ora_in_zi.html", auto_open = True)
-    fig.show()
+    fig.write_html("Plots/consum_pe_ora_in_zi.html")
 
 def plot_daily_consumption_in_a_year(house):  # Plotare pe an la interval de o zi pentru o casa
     input_csv = "Database/Consumption.csv"
@@ -125,8 +124,7 @@ def plot_daily_consumption_in_a_year(house):  # Plotare pe an la interval de o z
         hovermode = 'x unified'
     )
 
-    fig.write_html("Plots/consum_pe_zi_in_an.html", auto_open = True)
-    fig.show()
+    fig.write_html("Plots/consum_pe_zi_in_an.html")
 
 def plot_appliance_hourly_consumption_for_day(house, appliance_name, date_str):  # Plotare pe ora pentru un aparat intr-o zi specifica
     consumption_csv = "Database/Consumption.csv"
@@ -191,24 +189,21 @@ def plot_appliance_hourly_consumption_for_day(house, appliance_name, date_str): 
         hovermode = 'x unified'
     )
 
-    fig.write_html("Plots/appliance.html", auto_open = True)
-    fig.show()
+    fig.write_html("Plots/appliance.html")
 
-def plot_hourly_production_for_day(house, day = None):  # Plotare energie produsa pe ora intr-o zi
+def plot_hourly_production_for_day(house, day = None): # Plotare productia unei case pe ora intr-o zi
+    
     if not hasattr(house, 'production') or not house.production:
         print("Datele de productie nu sunt disponibile.")
         return
 
-    # Conversie epochtime -> datetime
     data = {datetime.fromtimestamp(int(k)): v for k, v in house.production.items()}
 
-    # Determinam ziua ceruta
     if day is None:
         day = next(iter(data)).date()
     elif isinstance(day, str):
         day = datetime.fromisoformat(day).date()
 
-    # Filtrare pe zi
     daily_data = {t: v for t, v in data.items() if t.date() == day}
 
     if not daily_data:
@@ -220,7 +215,7 @@ def plot_hourly_production_for_day(house, day = None):  # Plotare energie produs
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x = times,
+        x = np.array(times),  # explicit np.array
         y = values,
         mode = 'lines+markers',
         name = 'Productie estimata',
@@ -242,28 +237,26 @@ def plot_hourly_production_for_day(house, day = None):  # Plotare energie produs
         template = 'plotly_white'
     )
 
-    fig.write_html("Plots/productie_zi.html", auto_open = True)
-    fig.show()
+    fig.write_html("Plots/productie_zi.html")
 
-def plot_hourly_consumption_and_production_for_day(house, target_date): # Plotare putere consumata si produsa pe acelasi grafic intr-o zi
+def plot_hourly_consumption_and_production_for_day(house, target_date, optimized = False): # plotare consum si productie pe acelasi grafic (pentru date optimizate sau initiale)
+    if optimized:
+        html_filename = "Plots/consum_vs_productie_zi_optimizat.html"
+    else:
+        html_filename = "Plots/consum_vs_productie_zi.html"
 
-    # Se apeleaza cu puterea neoptimizata, numarul panourilor il dam ca parametru in get_power_estimated
     consumption_csv = "Database/Consumption.csv"
     df = pd.read_csv(consumption_csv)
     df = df[df['HouseIDREF'] == house.house_id]
 
     if df.empty:
-        print("Nu exista date de consum pentru casa " + str(house.house_id))
+        print("Nu exista date de consum pentru casa" + str(house.house_id))
         return
 
-    df['Datetime'] = pd.to_datetime(df['EpochTime'], unit='s')
+    df['Datetime'] = pd.to_datetime(df['EpochTime'], unit = 's')
     df['Date'] = df['Datetime'].dt.date
 
-    try:
-        target_day = pd.to_datetime(target_date).date()
-    except Exception as e:
-        print("Data introdusa este invalida: " + str(e))
-        return
+    target_day = pd.to_datetime(target_date).date()
 
     df = df[df['Date'] == target_day]
 
@@ -271,7 +264,6 @@ def plot_hourly_consumption_and_production_for_day(house, target_date): # Plotar
         print("Nu exista consum in ziua " + str(target_date) + " pentru casa " + str(house.house_id))
         return
 
-    # Grupare consum pe ora si transformare in kWh
     df['Hour'] = df['Datetime'].dt.floor('h')
     hourly_consumption = df.groupby('Hour')['Value'].sum().reset_index()
     hourly_consumption['Value'] /= 6000
@@ -280,16 +272,15 @@ def plot_hourly_consumption_and_production_for_day(house, target_date): # Plotar
         print("Datele de productie nu sunt disponibile.")
         return
 
-    # Convertim epochtime -> datetime si filtram ziua
     production_data = {datetime.fromtimestamp(int(k)): v for k, v in house.production.items()}
     daily_production = {t: v for t, v in production_data.items() if t.date() == target_day}
 
     if not daily_production:
-        print("Nu exista productie pentru ziua " + str(target_day))
+        print("Nu exista productie in ziua " + str(target_day))
         return
 
     production_df = pd.DataFrame({
-        'Datetime': list(daily_production.keys()),
+        'Datetime': np.array(list(daily_production.keys())),
         'Production': list(daily_production.values())
     })
 
@@ -299,31 +290,31 @@ def plot_hourly_consumption_and_production_for_day(house, target_date): # Plotar
     fig = go.Figure()
 
     fig.add_trace(go.Scatter(
-        x=hourly_consumption['Hour'],
-        y=hourly_consumption['Value'],
-        mode='lines+markers',
-        name='Consum (kWh)',
-        line=dict(color='blue'),
-        hovertemplate='Ora: %{x|%H:%M}<br>Consum: %{y:.2f} kWh<extra></extra>'
+        x = hourly_consumption['Hour'],
+        y = hourly_consumption['Value'],
+        mode = 'lines+markers',
+        name = 'Consum (kWh)',
+        line = dict(color = 'blue'),
+        hovertemplate = 'Ora: %{x|%H:%M}<br>Consum: %{y:.2f} kWh<extra></extra>'
     ))
 
     fig.add_trace(go.Scatter(
-        x=hourly_production['Hour'],
-        y=hourly_production['Production'],
-        mode='lines+markers',
-        name='Productie (kWh)',
-        line=dict(color='orange'),
-        hovertemplate='Ora: %{x|%H:%M}<br>Productie: %{y:.2f} kWh<extra></extra>'
+        x = hourly_production['Hour'],
+        y = hourly_production['Production'],
+        mode = 'lines+markers',
+        name = 'Productie (kWh)',
+        line = dict(color='orange'),
+        hovertemplate = 'Ora: %{x|%H:%M}<br>Productie: %{y:.2f} kWh<extra></extra>'
     ))
 
     fig.update_layout(
-        title="Consum vs. Productie in ziua " + str(target_day) + f" (casa {house.house_id})",
-        xaxis_title="Ora",
-        yaxis_title="Energie (kWh)",
-        xaxis=dict(tickformat='%H:%M'),
-        hovermode='x unified',
-        template='plotly_white'
+        title = "Consum vs Productie in ziua " + str(target_day) + ", casa " + str(house.house_id),
+        xaxis_title = "Ora",
+        yaxis_title = "Energie (kWh)",
+        xaxis = dict(tickformat='%H:%M'),
+        hovermode = 'x unified',
+        template = 'plotly_white'
     )
 
-    fig.write_html("Plots/consum_vs_productie_zi.html", auto_open=True)
-    fig.show()
+    fig.write_html(html_filename)
+
