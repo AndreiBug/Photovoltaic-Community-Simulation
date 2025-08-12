@@ -7,16 +7,13 @@ def objective_max_sc_ss(x, indicator_obj, w_sc = 0.5, w_ss = 0.5, Pm = 575, f = 
                             GTSTC = 1000.0): 
     n_panels = x[0]
 
-    # Salveaza productia curenta
     prod_backup = indicator_obj.production
 
-    # Productie temporara pentru n_panels
     indicator_obj.get_power_estimated(n_panels, Pm = Pm, f = f, GTSTC = GTSTC)
 
     sc_val = indicator_obj.calculate_indicator("SC")
     ss_val = indicator_obj.calculate_indicator("SS")
 
-    # Revenire la productia originala
     indicator_obj.production = prod_backup
 
     score = (w_sc * sc_val) + (w_ss * ss_val)
@@ -38,7 +35,7 @@ def objective_min_neeg(x, indicator_obj, Pm = 575, f = 0.8, GTSTC = 1000.0): # C
     return neeg_val  # DE minimizeaza, deci minimizam NEEG direct
 
 def optimize_panels_max_ss_sc(indicator_obj, n_min = 1, n_max = 40, w_sc = 0.5, w_ss = 0.5, Pm = 575, f = 0.8, # Differential evolution pentru maximizare SS si SC
-                                    GTSTC = 1000.0, maxiter = 40, popsize = 15):
+                                    GTSTC = 1000.0, maxiter = 40):
     if not indicator_obj.consumption:
         print("Nu exista date pentru consum")
         return
@@ -53,7 +50,6 @@ def optimize_panels_max_ss_sc(indicator_obj, n_min = 1, n_max = 40, w_sc = 0.5, 
         bounds = bounds,
         args = (indicator_obj, w_sc, w_ss, Pm, f, GTSTC),
         maxiter = maxiter,
-        popsize = popsize,
     )
 
     n_opt = int(round(result.x[0]))
@@ -84,21 +80,21 @@ def optimize_panels_max_ss_sc(indicator_obj, n_min = 1, n_max = 40, w_sc = 0.5, 
     }
 
 def optimize_panels_max_ss(indicator_obj, n_min = 1, n_max = 40, Pm = 575, f = 0.8, # Differential evolution pentru maximizare SS
-                                GTSTC = 1000.0, maxiter = 40, popsize = 15):
+                                GTSTC = 1000.0, maxiter = 40):
     return optimize_panels_max_ss_sc(
         indicator_obj = indicator_obj, n_min = n_min, n_max = n_max, w_sc = 0.0, w_ss = 1.0,
-        Pm = Pm, f = f, GTSTC = GTSTC, maxiter = maxiter, popsize = popsize
+        Pm = Pm, f = f, GTSTC = GTSTC, maxiter = maxiter
     )
 
 def optimize_panels_max_sc(indicator_obj, n_min = 1, n_max = 40, Pm = 575, f = 0.8, # Differential evolution pentru maximizare SC
-                                GTSTC = 1000.0, maxiter = 40, popsize = 15):
+                                GTSTC = 1000.0, maxiter = 40):
     return optimize_panels_max_ss_sc(
         indicator_obj = indicator_obj, n_min = n_min, n_max = n_max, w_sc = 1.0, w_ss = 0.0,
-        Pm = Pm, f = f, GTSTC = GTSTC, maxiter = maxiter, popsize = popsize
+        Pm = Pm, f = f, GTSTC = GTSTC, maxiter = maxiter
     )
 
 def optimize_panels_min_neeg(indicator_obj, n_min = 1, n_max = 40, Pm = 575, f = 0.8, # Differential evolution pentru minimizare NEEG
-                                GTSTC = 1000.0, maxiter = 40, popsize = 15):
+                                GTSTC = 1000.0, maxiter = 40):
     if not indicator_obj.consumption:
         print("Nu exista date pentru consum")
         return
@@ -111,7 +107,7 @@ def optimize_panels_min_neeg(indicator_obj, n_min = 1, n_max = 40, Pm = 575, f =
 
     result = differential_evolution(
         objective_min_neeg, bounds = bounds, args = (indicator_obj, Pm, f, GTSTC),
-        maxiter = maxiter, popsize = popsize,
+        maxiter = maxiter,
     )
 
     n_opt = int(round(result.x[0]))
