@@ -48,7 +48,6 @@ class Indicators(EnergyProcessing):
 
         value = numerator / denominator
         setattr(self, indicator_type, value)
-        print(str(indicator_type) + ": " + str(round(value, 3)))
         return value
 
     def calculate_NEEG(self): # Calculul NEEG
@@ -70,29 +69,34 @@ class Indicators(EnergyProcessing):
                 exported_energy += (prod - cons)
 
         self.NEEG = imported_energy + exported_energy
-
-        print("NEEG: " + str(round(self.NEEG, 3)) + " kWh")
         return self.NEEG
 
-    def calculate_NPV(self, Cwp = 0.11, Pm = 575, n = 1, Y = 20, r = 0.05, price_per_kWh = 0.2): # Calculul NPV
+    def calculate_NPV(self, Cwp = 0.1, Pm = 500, n = 10, Y = 20, r = 0.05, price_per_kWh = 0.2): # Calculeaza lista NPV pe fiecare an pentru perioada de Y ani
+        # Cwp = cost per watt
+        # Pm = puterea unui panou (W)
+        # n = numar panouri
+        # Y = numar ani
+        # r = rata de actualizare
+        # price_per_kWh = pret energie
 
         if not self.is_production_available() or not self.is_consumption_available():
             return
 
+        # Cost initial (CapEX) si cost anual (OpEX)
         CapEX = Cwp * Pm * n
         OpEX = 0.03 * CapEX
 
+        # Ore comune
         common_times = set(self.production.keys()) & set(self.consumption.keys())
-        
         if not common_times:
             print("Nu exista date comune pentru calculul NPV.")
-            return 0
-        
-        # Calculam energiile pentru perioada disponibila
+            return [0] * Y
+
+        # Consum si autoconsum total
         total_consumption = sum(self.consumption[t] for t in common_times)
         total_self_consumption = sum(min(self.production[t], self.consumption[t]) for t in common_times)
-        
-        # Extindem pe un an intreg (8760 ore)
+
+        # Extindem la un an intreg
         hours_available = len(common_times)
         annual_consumption = (total_consumption / hours_available) * 8760
         annual_self_consumption = (total_self_consumption / hours_available) * 8760
@@ -104,14 +108,30 @@ class Indicators(EnergyProcessing):
         energy_from_grid = max(0, annual_consumption - annual_self_consumption)
         B_new = energy_from_grid * price_per_kWh
 
-        # Castig anual
+        # Economie anuala
         G = B_ref - B_new
 
-        # NPV
-        npv = -CapEX
+        # Calcul NPV pe fiecare an
+        npv_values = []
+        npv_cumul = -CapEX  # anul 0, investitia
         for t in range(1, Y + 1):
-            npv += (G - OpEX) / ((1 + r) ** t)
+            npv_cumul += (G - OpEX) / ((1 + r) ** t)
+            npv_values.append(npv_cumul)
 
-        self.NPV = npv
-        print("NPV: " + str(round(self.NPV, 3)))
-        return self.NPV
+        self.NPV = npv_values
+        return npv_values
+
+    def print_indicators(self): # Printeaza SS/SC
+        if hasattr(self, "SC"):
+            print(f"SC: {round(self.SC, 3)}")
+        if hasattr(self, "SS"):
+            print(f"SS: {round(self.SS, 3)}")
+
+    def print_NEEG(self): # Printeaza NEEG
+        if hasattr(self, "NEEG"):
+            print(f"NEEG: {round(self.NEEG, 3)} kWh")
+
+    def print_NPV(self): # Printeaza NPV
+        if hasattr(self, "NPV"):
+            print(f"NPV final: {round(self.NPV[-1], 3)}")
+            print(f"Lista NPV: {[round(val, 3) for val in self.NPV]}")

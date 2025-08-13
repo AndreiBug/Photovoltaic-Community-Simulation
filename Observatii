@@ -80,6 +80,9 @@ Implementarea unei functii de optimizare a performantelor energetice ale unei ca
 
 10. August 25 - August 31
 
-INTREBARI:
-Ponderile lui SS si SC trebuie schimbate pentru a afisa curba cum trebuie?
-Sunt bine facute transformarile pentru unitatile de masura?
+DE FACUT:
+- Creare o variabila de tip house/indicator pentru a retine valorile optimizate si pentru a reprezenta graficele?
+- Gasire ponderi pentru valori frumoase
+- Incep sa utilizez streamlit sa fac o interfata mica
+- Plotarea tuturor graficelor optimizate in html-uri diferite sau grafice diferite - DONE
+- NPV pe parcursul anilor - DONE
