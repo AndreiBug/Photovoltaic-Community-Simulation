@@ -72,13 +72,19 @@ Analiza datelor energetice si implementarea functiilor pentru calculul indicator
 Testarea si validarea functiilor pentru indicatorii energetici. Am verificat corectitudinea calculelor pentru SS, SC, NEEG si NPV pe mai multe seturi de date.
 
 7. August 4 - August 10
-Implementarea unei functii de optimizare a performantelor energetice ale unei case, avand ca obiectiv maximizarea indicatorilor SS, SC sau minimizarea NEEG. Am inceput testarea mai multor combinatii de parametri pentru a identifica configuratia optima.
+Implementarea unei functii de optimizare a performantelor energetice ale unei case, avand ca obiectiv maximizarea indicatorilor SS, SC.
 
 8. August 11 - August 17
+Implementarea unei functii de optimizare a performantelor energetice ale unei case, avand ca obiectiv minimizarea NEEG. Am inceput testarea mai multor combinatii de parametri pentru a identifica configuratia optima.
 
 9. August 18 - August 24
+Reorganizarea codului si crearea unei functii de optimizare care are ca obiectiv maximizarea simultana a SS si SC in functie de niste ponderi date.
 
 10. August 25 - August 31
+Testarea functiei de optimizare multi-obiectiv pe mai multe seturi de date. Am comparat rezultatele obtinute pentru diferite valori ale ponderilor si am analizat modul in care acestea influenteaza indicatorii SS si SC.
+
+11. Septembrie 1 - Septembrie 5
+Validarea finala a functiilor de optimizare si corectarea erorilor identificate. Am documentat structura proiectului si am pregatit concluziile privind metodele implementate.
 
 DE FACUT:
 - Creare o variabila de tip house/indicator pentru a retine valorile optimizate si pentru a reprezenta graficele?
