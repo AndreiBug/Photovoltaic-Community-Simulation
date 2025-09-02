@@ -5,12 +5,12 @@
 Case eliminate cu 30 zile consecutive cu 0 consum: {2000925}
 Case eliminate cu mai putin de un an de date: [2000902, 2000981, 2000993]
 62 case eliminate care nu au valori pentru radiatie la statia meteo.
-634 randuri eliminate din Appliance.csv.
-33676139 randuri eliminate din Consumption.csv.
-32 statii meteo eliminate din WeatherStation.csv.
-3855724 randuri eliminate din WeatherData.csv.
-160 randuri eliminate din Record.csv.
-Numar total de spike-uri normalizate: 375794
+634 randuri eliminate din Database/Appliance.csv
+33676139 randuri eliminate din Database/Consumption.csv
+32 statii meteo eliminate din Database/WeatherStation.csv
+3855724 randuri eliminate din Database/WeatherData.csv
+160 randuri eliminate din Database/Record.csv
+Spike-uri normalizate: 375794
 Au fost corectate 16308 valori negative din WeatherData.
 
 ====================
@@ -90,5 +90,3 @@ DE FACUT:
 - Creare o variabila de tip house/indicator pentru a retine valorile optimizate si pentru a reprezenta graficele?
 - Gasire ponderi pentru valori frumoase
 - Incep sa utilizez streamlit sa fac o interfata mica
-- Plotarea tuturor graficelor optimizate in html-uri diferite sau grafice diferite - DONE
-- NPV pe parcursul anilor - DONE
