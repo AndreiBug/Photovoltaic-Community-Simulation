@@ -1,6 +1,9 @@
 from datetime import datetime
 
-epoch_time = 890332200
-converted_time = datetime.fromtimestamp(epoch_time)
+def epoch_to_datetime(epoch_time):
+    return datetime.fromtimestamp(epoch_time).strftime('%Y-%m-%d %H:%M:%S')
 
-print(converted_time)
+if __name__ == "__main__":
+    epoch = 890344800
+    print("Epoch:", epoch)
+    print("Data si ora:", epoch_to_datetime(epoch))

@@ -1,4 +1,3 @@
-import pandas as pd
 from house import House
 
 ########## Functii pentru calculul energiei produse / consumate ##########
@@ -6,79 +5,44 @@ from house import House
 class EnergyProcessing(House):
     def __init__(self, house_id):
         super().__init__(house_id)
-        self.consumption = {} #Puterea consumata pe ora
-        self.production = {} # Puterea produsa pe ora
-        self.solar_radiation = {} # Radiatia solara pe ora
+        
+        # Foloseste datele pre-incarcate din loader
+        self.consumption = self.loader.consumption_data.copy()
+        self.solar_radiation = self.loader.solar_radiation_data.copy()
+        self.production = {}  # Se calculeaza la nevoie cu get_power_estimated()
     
-    def get_consumption(self):  # Calculeaza consumul total al casei per ora din csv
-        consumption_file = "Database/Consumption.csv"
-        df = pd.read_csv(consumption_file)
-
-        df = df[df['HouseIDREF'] == self.house_id]
-
-        # Convertim EpochTime la inceputul orei (rotunjire in jos la multiplu de 3600)
-        def fix_hour(x):
-            return x - (x % 3600)
-        df['HourEpoch'] = df['EpochTime'].apply(fix_hour)
-    
-        df_hourly = df.groupby('HourEpoch')['Value'].sum()
-
-        self.consumption = (df_hourly / 6000).to_dict()
-
+    def get_consumption(self): # Returneaza consumul (deja incarcat din loader)
         return self.consumption
 
-    def get_solar_radiation(self): # Ia radiatia solara din WeatherData
-        house_file = "Database/House.csv"
-        weather_file = "Database/WeatherData.csv"
-
-        df_house = pd.read_csv(house_file)
-        df_weather = pd.read_csv(weather_file)
-
-        station_row = df_house[df_house['ID'] == self.house_id]
-
-        station_id = station_row.iloc[0]['WeatherStationIDREF']
-
-        df_filtered = df_weather[
-            (df_weather['WeatherStationIDREF'] == station_id) &
-            (df_weather['WeatherVariableIDREF'] == 4)
-        ]
-
-        if df_filtered.empty:
-            print("Nu s-au gasit date meteo pentru statia " + str(station_id))
-            return {}
-
-        df_grouped = df_filtered.groupby('EpochTime')['Value'].sum()
-        self.solar_radiation = df_grouped.to_dict()
-
+    def get_solar_radiation(self): # Returneaza radiatia solara (deja incarcata din loader)
         return self.solar_radiation
 
-    def get_power_estimated(self, n = 10, Pm = 575, f = 0.8, GTSTC = 1000):  # Calculeaza puterea produsa estimata pentru n panouri
+    def get_power_estimated(self, n=10, Pm=575, f=0.8, GTSTC=1000): # Calculeaza puterea produsa estimata pentru n panouri.            
         if not self.solar_radiation:
             print("Radiatia solara nu este incarcata.")
             return {}
-
-        production_data = {
+        
+        self.production = {
             t: (Pm * n * f * G / GTSTC) / 6000  # W*10min -> kWh
             for t, G in self.solar_radiation.items()
         }
-
-        self.production = production_data
+        
         return self.production
 
-    def print_consumption(self):  # Printeaza consumul
+    def print_consumption(self): # Printeaza primele 30 valori de consum
         for i, (key, value) in enumerate(self.consumption.items()):
             if i >= 30:
                 break
-            print("Consum la ora " + str(i + 1) + ": Epoch " + str(key) + " -> " + str(round(value, 3)) + " kWh")
+            print(f"Consum la ora {i + 1}: Epoch {key} -> {round(value, 3)} kWh")
 
-    def print_solar_radiation(self):  # Printeaza radiatia solara
+    def print_solar_radiation(self): # Printeaza primele 30 valori de radiatie solara
         for i, (key, value) in enumerate(self.solar_radiation.items()):
             if i >= 30:
                 break
-            print("Radiatie la ora " + str(i + 1) + ": Epoch " + str(key) + " -> G = " + str(value))
+            print(f"Radiatie la ora {i + 1}: Epoch {key} -> G = {value}")
 
-    def print_power_estimated(self):  # Printeaza puterea produsa
+    def print_power_estimated(self): # Printeaza primele 30 valori de putere estimata
         for i, (key, value) in enumerate(self.production.items()):
             if i >= 30:
                 break
-            print("Putere estimata la ora " + str(i + 1) + ": Epoch " + str(key) + " -> " + str(round(value, 3)) + " kW")
+            print(f"Putere estimata la ora {i + 1}: Epoch {key} -> {round(value, 3)} kW")

@@ -3,17 +3,21 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 import numpy as np
+from data_dictionaries import DataDictionaries
 
 ########## Plotarea graficelor ##########
 
-def plot_10min_consumption_for_day(house, target_date):  # Plotare pe zi la interval de 10 minute pentru o casa
+# Cache global pentru DataFrame-uri mari
+data_cache = DataDictionaries(verbose=False)
+
+def plot_10min_consumption_for_day(indicator_obj, target_date):  # Plotare pe zi la interval de 10 minute pentru o casa
     
-    input_csv = "Database/Consumption.csv"
-    df = pd.read_csv(input_csv)
-    df = df[df['HouseIDREF'] == house.house_id]  # Pastreaza doar randurile care apartin casei curente
+    # Foloseste cache-ul in loc sa citeasca CSV-ul de fiecare data
+    df = data_cache.get_consumption_df()
+    df = df[df['HouseIDREF'] == indicator_obj.house_id].copy()  # Pastreaza doar randurile care apartin casei curente
 
     if df.empty:
-        print("Nu exista date pentru casa " + str(house.house_id))
+        print("Nu exista date pentru casa " + str(indicator_obj.house_id))
         return
 
     # Converteste EpochTime in data-ora si extrage doar data
@@ -27,7 +31,7 @@ def plot_10min_consumption_for_day(house, target_date):  # Plotare pe zi la inte
     df = df[df['Date'] == target_day]
 
     if df.empty:
-        print("Nu exista consum in ziua " + str(target_date) + " pentru casa " + str(house.house_id))
+        print("Nu exista consum in ziua " + str(target_date) + " pentru casa " + str(indicator_obj.house_id))
         return
 
     # Grupare pe intervale de 10 minute
@@ -38,21 +42,20 @@ def plot_10min_consumption_for_day(house, target_date):  # Plotare pe zi la inte
         interval_total,
         x = 'Interval',
         y = 'Value',
-        title = "Consum total la 10 minute in ziua " + str(target_date) + " pentru casa " + str(house.house_id),
+        title = "Consum total la 10 minute in ziua " + str(target_date) + " pentru casa " + str(indicator_obj.house_id),
         labels = {'Interval': 'Ora (10 minute)', 'Value': 'Consum (W)'},
         markers = True
     )
     fig.update_layout(xaxis_tickformat = '%H:%M')
     fig.write_html("Plots/Date initiale/Consum_10min_zi.html")
 
-def plot_hourly_consumption_for_day(house, target_date):  # Plotare pe zi la interval de o ora pentru o casa
-    input_csv = "Database/Consumption.csv"  # Fisierul cu datele de consum
-
-    df = pd.read_csv(input_csv)
-    df = df[df['HouseIDREF'] == house.house_id]  # Filtrare dupa house_id
+def plot_hourly_consumption_for_day(indicator_obj, target_date):  # Plotare pe zi la interval de o ora pentru o casa
+    # Foloseste cache-ul in loc sa citeasca CSV-ul
+    df = data_cache.get_consumption_df()
+    df = df[df['HouseIDREF'] == indicator_obj.house_id].copy()  # Filtrare dupa house_id
 
     if df.empty:
-        print("Nu exista date pentru casa " + str(house.house_id))
+        print("Nu exista date pentru casa " + str(indicator_obj.house_id))
         return
 
     # Conversie EpochTime -> Datetime + extragere zi
@@ -68,7 +71,7 @@ def plot_hourly_consumption_for_day(house, target_date):  # Plotare pe zi la int
     df = df[df['Date'] == target_day]
 
     if df.empty:
-        print("Nu exista consum in ziua " + str(target_date) + " pentru casa " + str(house.house_id))
+        print("Nu exista consum in ziua " + str(target_date) + " pentru casa " + str(indicator_obj.house_id))
         return
 
     # Grupare pe ore
@@ -80,21 +83,20 @@ def plot_hourly_consumption_for_day(house, target_date):  # Plotare pe zi la int
         hourly_total,
         x = 'Hour',
         y = 'Value',
-        title = "Consum total orar in ziua " + str(target_date) + " pentru casa " + str(house.house_id),
+        title = "Consum total orar in ziua " + str(target_date) + " pentru casa " + str(indicator_obj.house_id),
         labels = {'Hour': 'Ora', 'Value': 'Consum (kWh)'},
         markers = True
     )
     fig.update_layout(xaxis_tickformat = '%H:%M')
     fig.write_html("Plots/Date initiale/Consum_ora_zi.html")
 
-def plot_daily_consumption_in_a_year(house):  # Plotare pe an la interval de o zi pentru o casa
-    input_csv = "Database/Consumption.csv"
-
-    df = pd.read_csv(input_csv)
-    df = df[df['HouseIDREF'] == house.house_id]  # Filtrare dupa ID-ul casei
+def plot_daily_consumption_in_a_year(indicator_obj):  # Plotare pe an la interval de o zi pentru o casa
+    # Foloseste cache-ul in loc sa citeasca CSV-ul
+    df = data_cache.get_consumption_df()
+    df = df[df['HouseIDREF'] == indicator_obj.house_id].copy()  # Filtrare dupa ID-ul casei
 
     if df.empty:
-        print("Nu exista date pentru casa " + str(house.house_id))
+        print("Nu exista date pentru casa " + str(indicator_obj.house_id))
         return
 
     # Conversie EpochTime -> Datetime + extragere data
@@ -117,7 +119,7 @@ def plot_daily_consumption_in_a_year(house):  # Plotare pe an la interval de o z
     ))
 
     fig.update_layout(
-        title = "Consum total pe zi pentru casa " + str(house.house_id),
+        title = "Consum total pe zi pentru casa " + str(indicator_obj.house_id),
         xaxis_title = 'Data',
         yaxis_title = 'Consum (kWh)',
         xaxis_tickformat = '%Y-%m-%d',
@@ -126,33 +128,31 @@ def plot_daily_consumption_in_a_year(house):  # Plotare pe an la interval de o z
 
     fig.write_html("Plots/Date initiale/Consum_an.html")
 
-def plot_appliance_hourly_consumption_for_day(house, appliance_name, date_str):  # Plotare pe ora pentru un aparat intr-o zi specifica
-    consumption_csv = "Database/Consumption.csv"
-    appliance_csv = "Database/Appliance.csv"
-
-    df_consumption = pd.read_csv(consumption_csv)
-    df_appliance = pd.read_csv(appliance_csv)
+def plot_appliance_hourly_consumption_for_day(indicator_obj, appliance_name, date_str):  # Plotare pe ora pentru un aparat intr-o zi specifica
+    # Foloseste cache-ul in loc sa citeasca CSV-urile
+    df_consumption = data_cache.get_consumption_df()
+    df_appliance = data_cache.get_appliance_df()
 
     # Obtine ID-ul aparatului dupa nume si casa
     filtered_appliances = df_appliance[
-        (df_appliance['HouseIDREF'] == house.house_id) &
+        (df_appliance['HouseIDREF'] == indicator_obj.house_id) &
         (df_appliance['Name'] == appliance_name)
     ]
 
     if filtered_appliances.empty:
-        print("Appliance-ul " + appliance_name + " nu a fost gasit pentru casa " + str(house.house_id))
+        print("Appliance-ul " + appliance_name + " nu a fost gasit pentru casa " + str(indicator_obj.house_id))
         return
 
     appliance_id = filtered_appliances.iloc[0]['ID']
 
     # Filtrare consum pentru acel aparat
     df = df_consumption[
-        (df_consumption['HouseIDREF'] == house.house_id) &
+        (df_consumption['HouseIDREF'] == indicator_obj.house_id) &
         (df_consumption['ApplianceIDREF'] == appliance_id)
     ].copy()
 
     if df.empty:
-        print("Nu exista date de consum pentru appliance-ul " + appliance_name + " in casa " + str(house.house_id))
+        print("Nu exista date de consum pentru appliance-ul " + appliance_name + " in casa " + str(indicator_obj.house_id))
         return
 
     # Conversie si filtrare dupa data
@@ -182,7 +182,7 @@ def plot_appliance_hourly_consumption_for_day(house, appliance_name, date_str): 
     ))
 
     fig.update_layout(
-        title = "Consum orar pentru " + appliance_name + " in casa " + str(house.house_id) + " (" + date_str + ")",
+        title = "Consum orar pentru " + appliance_name + " in casa " + str(indicator_obj.house_id) + " (" + date_str + ")",
         xaxis_title = 'Ora',
         yaxis_title = 'Consum (Wh)',
         xaxis = dict(dtick = 1),
@@ -191,13 +191,13 @@ def plot_appliance_hourly_consumption_for_day(house, appliance_name, date_str): 
 
     fig.write_html("Plots/Date initiale/Consum_appliance_zi.html")
 
-def plot_hourly_production_for_day(house, day = None): # Plotare productia unei case pe ora intr-o zi
+def plot_hourly_production_for_day(indicator_obj, day = None): # Plotare productia unei case pe ora intr-o zi
     
-    if not hasattr(house, 'production') or not house.production:
+    if not hasattr(indicator_obj, 'production') or not indicator_obj.production:
         print("Datele de productie nu sunt disponibile.")
         return
 
-    data = {datetime.fromtimestamp(int(k)): v for k, v in house.production.items()}
+    data = {datetime.fromtimestamp(int(k)): v for k, v in indicator_obj.production.items()}
 
     if day is None:
         day = next(iter(data)).date()
@@ -239,15 +239,15 @@ def plot_hourly_production_for_day(house, day = None): # Plotare productia unei 
 
     fig.write_html("Plots/Date initiale/Productie_zi.html")
 
-def plot_hourly_consumption_and_production_for_day(house, target_date, html_filename="Plots/Date initiale/Consum_vs_productie_zi.html"): 
+def plot_hourly_consumption_and_production_for_day(indicator_obj, target_date, html_filename="Plots/Date initiale/Consum_vs_productie_zi.html"): 
     # Plotare consum si productie pe acelasi grafic (pentru date optimizate sau initiale)
 
-    consumption_csv = "Database/Consumption.csv"
-    df = pd.read_csv(consumption_csv)
-    df = df[df['HouseIDREF'] == house.house_id]
+    # Foloseste cache-ul in loc sa citeasca CSV-ul
+    df = data_cache.get_consumption_df()
+    df = df[df['HouseIDREF'] == indicator_obj.house_id].copy()
 
     if df.empty:
-        print("Nu exista date de consum pentru casa " + str(house.house_id))
+        print("Nu exista date de consum pentru casa " + str(indicator_obj.house_id))
         return
 
     df['Datetime'] = pd.to_datetime(df['EpochTime'], unit='s')
@@ -257,18 +257,18 @@ def plot_hourly_consumption_and_production_for_day(house, target_date, html_file
     df = df[df['Date'] == target_day]
 
     if df.empty:
-        print("Nu exista consum in ziua " + str(target_date) + " pentru casa " + str(house.house_id))
+        print("Nu exista consum in ziua " + str(target_date) + " pentru casa " + str(indicator_obj.house_id))
         return
 
     df['Hour'] = df['Datetime'].dt.floor('h')
     hourly_consumption = df.groupby('Hour')['Value'].sum().reset_index()
     hourly_consumption['Value'] /= 6000
 
-    if not hasattr(house, 'production') or not house.production:
+    if not hasattr(indicator_obj, 'production') or not indicator_obj.production:
         print("Datele de productie nu sunt disponibile.")
         return
 
-    production_data = {datetime.fromtimestamp(int(k)): v for k, v in house.production.items()}
+    production_data = {datetime.fromtimestamp(int(k)): v for k, v in indicator_obj.production.items()}
     daily_production = {t: v for t, v in production_data.items() if t.date() == target_day}
 
     if not daily_production:
@@ -304,7 +304,7 @@ def plot_hourly_consumption_and_production_for_day(house, target_date, html_file
     ))
 
     fig.update_layout(
-        title="Consum vs Productie in ziua " + str(target_day) + ", casa " + str(house.house_id),
+        title="Consum vs Productie in ziua " + str(target_day) + ", casa " + str(indicator_obj.house_id),
         xaxis_title="Ora",
         yaxis_title="Energie (kWh)",
         xaxis=dict(tickformat='%H:%M'),
@@ -314,8 +314,8 @@ def plot_hourly_consumption_and_production_for_day(house, target_date, html_file
 
     fig.write_html(html_filename)
 
-def plot_NPV_over_years(house, Cwp = 0.6, Pm = 575, n = 10, Y = 20, r = 0.05, price_per_kWh = 0.2): # Plotare evolutie NPV pe Y ani
-    npv_values = house.calculate_NPV(Cwp=Cwp, Pm=Pm, n=n, Y=Y, r=r, price_per_kWh=price_per_kWh)
+def plot_NPV_over_years(indicator_obj, Cwp = 0.6, Pm = 575, n = 10, Y = 20, r = 0.05, price_per_kWh = 0.2): # Plotare evolutie NPV pe Y ani
+    npv_values = indicator_obj.calculate_NPV(Cwp=Cwp, Pm=Pm, n=n, Y=Y, r=r, price_per_kWh=price_per_kWh)
     years = list(range(1, Y + 1))
 
     fig = go.Figure()
@@ -337,7 +337,7 @@ def plot_NPV_over_years(house, Cwp = 0.6, Pm = 575, n = 10, Y = 20, r = 0.05, pr
     ))
 
     fig.update_layout(
-        title=f"Evolutia NPV pe {Y} ani (Casa {house.house_id})",
+        title=f"Evolutia NPV pe {Y} ani (Casa {indicator_obj.house_id})",
         xaxis_title="Ani",
         yaxis_title="NPV (€)",
         hovermode="x unified"

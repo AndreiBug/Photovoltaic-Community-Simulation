@@ -7,8 +7,8 @@ class Indicators(EnergyProcessing):
         super().__init__(house_id)
         self.SC = 0
         self.SS = 0
-        self.NPV = 0
-        self.NEEG = 0  
+        self.NPV = []
+        self.NEEG = 0
 
     def is_production_available(self):
         if not self.production:
@@ -52,7 +52,8 @@ class Indicators(EnergyProcessing):
 
     def calculate_NEEG(self): # Calculul NEEG
         if not self.is_production_available() or not self.is_consumption_available():
-            return
+            self.NEEG = 0
+            return 0
         
         imported_energy = 0
         exported_energy = 0
@@ -80,7 +81,8 @@ class Indicators(EnergyProcessing):
         # price_per_kWh = pret energie
 
         if not self.is_production_available() or not self.is_consumption_available():
-            return
+            self.NPV = [0] * Y
+            return [0] * Y
 
         # Cost initial (CapEX) si cost anual (OpEX)
         CapEX = Cwp * Pm * n
@@ -132,6 +134,9 @@ class Indicators(EnergyProcessing):
             print(f"NEEG: {round(self.NEEG, 3)} kWh")
 
     def print_NPV(self): # Printeaza NPV
-        if hasattr(self, "NPV"):
+        if isinstance(self.NPV, list) and len(self.NPV) > 0:
             print(f"NPV final: {round(self.NPV[-1], 3)}")
             print(f"Lista NPV: {[round(val, 3) for val in self.NPV]}")
+        else:
+            print("NPV nu este calculat inca.")
+
