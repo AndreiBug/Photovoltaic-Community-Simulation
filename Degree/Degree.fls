@@ -1,0 +1,84 @@
+PWD c:\Facultate\Proiect licenta\Degree
+INPUT C:\Users\Costache Andrei\AppData\Local\MiKTeX\miktex\data\le\xetex\xelatex.fmt
+INPUT c:\Facultate\Proiect licenta\Degree\Degree.tex
+OUTPUT Degree.log
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\base\report.cls
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\base\report.cls
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\base\size12.clo
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\base\size12.clo
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\base\size12.clo
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\iftex\iftex.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\iftex\iftex.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\fontspec\fontspec.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\fontspec\fontspec.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\l3packages\xparse\xparse.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\l3packages\xparse\xparse.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\l3kernel\expl3.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\l3kernel\expl3.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\l3backend\l3backend-xetex.def
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\l3backend\l3backend-xetex.def
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\fontspec\fontspec-xetex.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\fontspec\fontspec-xetex.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\base\fontenc.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\base\fontenc.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\fontspec\fontspec.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\fontspec\fontspec.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\fontspec\fontspec.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\babel\babel.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\babel\babel.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\babel\xebabel.def
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\arabi\bblopts.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\arabi\bblopts.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\arabi\bblopts.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\babel\locale\ro\babel-romanian.tex
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\babel\locale\ro\babel-romanian.tex
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\babel\locale\ro\babel-romanian.tex
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\babel\locale\ro\babel-ro.ini
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\geometry\geometry.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\geometry\geometry.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\iftex\ifvtex.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\generic\iftex\ifvtex.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\geometry\geometry.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\geometry\geometry.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\geometry\geometry.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics\graphicx.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics\graphicx.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics\graphics.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics\graphics.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics\trig.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics\trig.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics-cfg\graphics.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics-cfg\graphics.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics-cfg\graphics.cfg
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics-def\xetex.def
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics-def\xetex.def
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics-def\xetex.def
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\tools\indentfirst.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\tools\indentfirst.sty
+INPUT .\Degree.aux
+INPUT .\Degree.aux
+INPUT Degree.aux
+OUTPUT Degree.aux
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi12.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi8.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi6.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy8.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy6.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr8.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr6.tfm
+INPUT .\pics\logo\upb.jpg
+INPUT .\pics\logo\upb.jpg
+INPUT .\pics\logo\aii.png
+INPUT .\pics\logo\aii.png
+INPUT .\pics\logo\acs.png
+INPUT .\pics\logo\acs.png
+OUTPUT Degree.xdv
+INPUT .\Degree.toc
+INPUT .\Degree.toc
+INPUT Degree.toc
+OUTPUT Degree.toc
+INPUT Degree.aux

@@ -5,14 +5,15 @@ from indicators import Indicators
 from data_dictionaries import DataDictionaries
 import pandas as pd
 
-class CommunityModel(Model): # Model pentru o comunitate de case cu agent central de recomandari
+class CommunityModel(Model): # Model pentru o comunitate de case cu agent de recomandari
     
     # recommendation_type = community sau presence
     # house_type = probabilistic sau presence
     # application_rates este o lista cu probabilitati personalizate pentru fiecare casa pentru house_type probabilistic
     # agent_type = "100", "75", "50", "25" - doar pentru house_type probabilistic, determina probabilitatea de aplicare a recomandarii
+    # specific_house_id = ID-ul unei case specifice (optional) - daca este setat, se foloseste doar aceasta casa
     
-    def __init__(self, num_houses = 3, recommendation_type = "community", house_type = "probabilistic", agent_type = "100", application_rates = None):
+    def __init__(self, num_houses = 3, recommendation_type = "community", house_type = "probabilistic", agent_type = "100", application_rates = None, specific_house_id = None):
         super().__init__()
         self.step_count = 0
         self.num_houses = num_houses
@@ -30,33 +31,37 @@ class CommunityModel(Model): # Model pentru o comunitate de case cu agent centra
         # Foloseste cache-ul pentru a obtine ID-urile caselor
         data_cache = DataDictionaries(verbose=False)
         all_houses = data_cache.get_all_houses()
-        house_ids = list(all_houses.keys())[:num_houses]
+        all_house_ids = list(all_houses.keys())
+        
+        # Daca este specificat specific_house_id, foloseste doar acea casa
+        if specific_house_id is not None:
+            house_ids = [specific_house_id]
+            self.num_houses = 1
+        else:
+            # Cicleaza casele daca sunt mai putine decat num_houses
+            if num_houses > len(all_house_ids):
+                house_ids = (all_house_ids * ((num_houses // len(all_house_ids)) + 1))[:num_houses]
+            else:
+                house_ids = all_house_ids[:num_houses]
 
         # Creaza agentul de recomandari in functie de tip
         if recommendation_type == "community":
             self.recommendation_agent = RecommendationAgent("recommendation_system", self)
-            print(f"Agent de recomandari: COMMUNITY (bazat pe consumul mediu al comunitatii)")
         elif recommendation_type == "presence":
             self.recommendation_agent = PresenceRecommendationAgent("recommendation_system", self)
-            print(f"Agent de recomandari: PRESENCE (bazat pe prezenta si consum individual)")
         else:
             print(f"Tip recomandare necunoscut: {recommendation_type}. Optiuni: 'community' sau 'presence'")
         
         # Creeaza agentii pentru case in functie de tip
         self.houses = []
-        print(f"Tip case: {house_type.upper()}")
-        print("Adaugare case:")
         
         if house_type == "probabilistic":
             # Determina application_rate pentru case
             if application_rates is not None:
-                # Foloseste lista de probabilitati specificata
                 if len(application_rates) != num_houses:
-                    print(f"Numarul de application_rates ({len(application_rates)}) trebuie sa fie egal cu num_houses ({num_houses})")
+                    print(f"Eroare: Numarul de application_rates ({len(application_rates)}) != num_houses ({num_houses})")
                 self.house_application_rates = application_rates
-                print(f"Probabilitati personalizate: {application_rates}")
             else:
-                # Foloseste aceeasi probabilitate pentru toate casele bazat pe agent_type
                 if agent_type == "100":
                     rate = 1.0
                 elif agent_type == "75":
@@ -69,31 +74,22 @@ class CommunityModel(Model): # Model pentru o comunitate de case cu agent centra
                     print(f"Tip agent necunoscut: {agent_type}. Se foloseste probabilitate 100%.")
                     rate = 1.0
                 self.house_application_rates = [rate] * num_houses
-                print(f"Probabilitate aplicare: {agent_type}%")
             
             # Creaza case probabilistice
             for i in range(num_houses):
                 house_id = house_ids[i]
                 house_rate = self.house_application_rates[i]
-                print(f"  Casa {house_id} (application_rate: {house_rate*100:.0f}%)")
                 house_agent = HouseAgent(house_id, self, application_rate=house_rate)
                 self.houses.append(house_agent)
         
         elif house_type == "presence":
-            # Creaza case cu detectie prezenta reala
-            print("Case cu detectie prezenta reala (bazat pe appliance-uri)")
             for i in range(num_houses):
                 house_id = house_ids[i]
-                print(f"  Casa {house_id} (detectie prezenta: 10x minim, >=2 appliance-uri)")
                 house_agent = PresenceHouseAgent(house_id, self)
                 self.houses.append(house_agent)
         
         else:
             print(f"Tip casa necunoscut: {house_type}. Optiuni: 'probabilistic' sau 'presence'")
-        
-        print(f"\nComunitate initializata: {num_houses} case")
-        print(f"  - Agent recomandari: {recommendation_type}")
-        print(f"  - Tip case: {house_type}\n")
 
     def step(self): # Un pas de simulare pentru toata comunitatea
         for house in self.houses:
@@ -103,6 +99,11 @@ class CommunityModel(Model): # Model pentru o comunitate de case cu agent centra
         current_time = self.houses[0].current_time if self.houses else None
         
         if current_time is not None:
+            # Actualizeaza istoricul fiecarei case DUPA aplicarea recomandarii
+            for house in self.houses:
+                house.consumption_history.append(house.current_consumption_adjusted)
+                house.production_history.append(house.current_production_adjusted)
+            
             # Calculeaza totaluri pentru acest timestamp
             total_consumption = sum(h.current_consumption for h in self.houses)
             total_production = sum(h.current_production for h in self.houses)

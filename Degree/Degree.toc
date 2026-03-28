@@ -1,0 +1,9 @@
+\babel@toc {romanian}{}\relax 
+\contentsline {chapter}{1. Introducere}{2}{}%
+\contentsline {chapter}{2. Prezentarea problemei abordate}{3}{}%
+\contentsline {chapter}{3. Metoda propusă}{4}{}%
+\contentsline {chapter}{4. Studiu de caz}{5}{}%
+\contentsline {section}{Procesul implementării}{5}{}%
+\contentsline {chapter}{5. Concluzii}{8}{}%
+\contentsline {chapter}{6. Bibliografie}{9}{}%
+\contentsline {chapter}{7. Lista contribuțiilor personale}{10}{}%

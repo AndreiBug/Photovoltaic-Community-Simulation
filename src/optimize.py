@@ -1,7 +1,12 @@
 from scipy.optimize import differential_evolution
 from plot import plot_hourly_consumption_and_production_for_day
+import os
 
 ########## Optimizarea panourilor solare in functie de indicatori ##########
+
+# Constante pentru directoarele de ploturi
+PLOTS_DIR = "Plots"
+OPTIMISED_DATA_DIR = os.path.join(PLOTS_DIR, "Optimised Data")
 
 def objective_max_sc_ss(x, indicator_obj, w_sc = 0.5, w_ss = 0.5, Pm = 575, f = 0.8, # Calculare functie obiectiv (scor maxim) pentru optimizarea SS si SC
                             GTSTC = 1000.0): 
@@ -35,7 +40,7 @@ def objective_min_neeg(x, indicator_obj, Pm = 575, f = 0.8, GTSTC = 1000.0): # C
     return neeg_val  # DE minimizeaza, deci minimizam NEEG direct
 
 def optimize_panels_max_ss_sc(indicator_obj, n_min = 1, n_max = 40, w_sc = 0.5, w_ss = 0.5, Pm = 575, f = 0.8, # Differential evolution pentru maximizare SS si SC
-                                    GTSTC = 1000.0, maxiter = 40, date = None, html_filename="Plots/Optimizari/SS_SC_optimizat.html"):
+                                    GTSTC = 1000.0, maxiter = 40, date = None, html_filename=None):
     if not indicator_obj.consumption:
         print("Nu exista date pentru consum")
         return
@@ -70,6 +75,8 @@ def optimize_panels_max_ss_sc(indicator_obj, n_min = 1, n_max = 40, w_sc = 0.5, 
     print("Scor combinat:", round(best_score, 3), "\n")
 
     # Afisare plot cu valori optimizate
+    if html_filename is None:
+        html_filename = os.path.join(OPTIMISED_DATA_DIR, "SS_SC_optimizat.html")
     plot_hourly_consumption_and_production_for_day(indicator_obj, date, html_filename)
 
     return {
@@ -80,14 +87,18 @@ def optimize_panels_max_ss_sc(indicator_obj, n_min = 1, n_max = 40, w_sc = 0.5, 
     }
 
 def optimize_panels_max_ss(indicator_obj, n_min = 1, n_max = 40, Pm = 575, f = 0.8, # Differential evolution pentru maximizare SS
-                                GTSTC = 1000.0, maxiter = 40, date = None, html_filename="Plots/Optimizari/SS_optimizat.html"):
+                                GTSTC = 1000.0, maxiter = 40, date = None, html_filename=None):    
+    if html_filename is None:
+        html_filename = os.path.join(OPTIMISED_DATA_DIR, "SS_optimizat.html")
     return optimize_panels_max_ss_sc(
         indicator_obj = indicator_obj, n_min = n_min, n_max = n_max, w_sc = 0.0, w_ss = 1.0,
         Pm = Pm, f = f, GTSTC = GTSTC, maxiter = maxiter, date = date, html_filename = html_filename
     )
 
 def optimize_panels_max_sc(indicator_obj, n_min = 1, n_max = 40, Pm = 575, f = 0.8, # Differential evolution pentru maximizare SC
-                                GTSTC = 1000.0, maxiter = 40, date = None, html_filename="Plots/Optimizari/SC_optimizat.html"):
+                                GTSTC = 1000.0, maxiter = 40, date = None, html_filename=None):    
+    if html_filename is None:
+        html_filename = os.path.join(OPTIMISED_DATA_DIR, "SC_optimizat.html")
     return optimize_panels_max_ss_sc(
         indicator_obj = indicator_obj, n_min = n_min, n_max = n_max, w_sc = 1.0, w_ss = 0.0,
         Pm = Pm, f = f, GTSTC = GTSTC, maxiter = maxiter, date = date, html_filename = html_filename
@@ -126,7 +137,7 @@ def optimize_panels_min_neeg(indicator_obj, n_min = 1, n_max = 40, Pm = 575, f =
     print("SC: " + str(round(sc_val, 3)))
 
     # Afisare plot cu valori optimizate
-    plot_hourly_consumption_and_production_for_day(indicator_obj, date, html_filename="Plots/Optimizari/NEEG_optimizat.html")
+    plot_hourly_consumption_and_production_for_day(indicator_obj, date, html_filename=os.path.join(OPTIMISED_DATA_DIR, "NEEG_optimizat.html"))
 
     return {
         'best_n': n_opt,

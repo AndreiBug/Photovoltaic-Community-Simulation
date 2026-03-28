@@ -1,6 +1,7 @@
 from energy_processing import EnergyProcessing
 from datetime import datetime
 import pandas as pd
+import numpy as np
 from data_dictionaries import DataDictionaries
 
 # Model de prezenta al casei bazat pe consumul energetic
@@ -10,7 +11,7 @@ class PresenceModel(EnergyProcessing):
         self.presence_data = {}  # Dictionar cu timestamp si prezenta (True/False)
         self.consumption_threshold = 0.0  # Prag minim de consum pentru prezenta
     
-    def evaluate_presence_for_date(self, date_str): # Evalueaza prezenta in casa pentru o zi specifica (perceptia managerului)
+    def evaluate_presence_for_date(self, date_str, percentile = 40, verbose = True): # Evalueaza prezenta in casa pentru o zi specifica (perceptia managerului)
         if not self.consumption:
             print("Nu exista date de consum pentru casa", self.house_id)
             return {}
@@ -30,52 +31,57 @@ class PresenceModel(EnergyProcessing):
             print("Nu exista date de consum pentru data", date_str)
             return {}
         
-        # Calcul medie consum
-        average_hourly_consumption = sum(daily_consumption.values()) / len(daily_consumption)
-        
-        # Prag prezenta: 10% din media orara
-        self.consumption_threshold = average_hourly_consumption * 0.1
+        # Converteste la array pentru calcule statistice
+        consumption_values = np.array(list(daily_consumption.values()))
         sorted_times = sorted(daily_consumption.keys())
         total_daily_consumption = sum(daily_consumption.values())
         
-        # Determinare interval disponibil
-        first_timestamp = min(daily_consumption.keys())
-        last_timestamp = max(daily_consumption.keys())
-        first_time_str = datetime.fromtimestamp(first_timestamp).strftime('%H:%M:%S')
-        last_time_str = datetime.fromtimestamp(last_timestamp).strftime('%H:%M:%S')
+        # Calcul statistici pentru afisare
+        average_hourly_consumption = consumption_values.mean()
+        median_consumption = np.percentile(consumption_values, 50)
+        q1_consumption = np.percentile(consumption_values, 25)
+        q3_consumption = np.percentile(consumption_values, 75)
         
-        print("\nMODEL DE PREZENTA PENTRU CASA", self.house_id)
-        print("Data:", date_str, "(interval: 00:00 - 00:00 ziua urmatoare)")
-        print("Date disponibile:", first_time_str, "-", last_time_str)
-        print("Consum total disponibil:", round(total_daily_consumption, 3), "kWh")
-        print("Consum mediu:", round(average_hourly_consumption, 3), "kWh")
-        print("Prag de prezenta (10% din media):", round(self.consumption_threshold, 3), "kWh\n")
+        # Prag de prezenta = percentile ales din distributia zilnica
+        self.consumption_threshold = np.percentile(consumption_values, percentile)
         
-        print("Ora, Timestamp, Consum (kWh), Prezenta")
+        if verbose:
+            first_timestamp = min(daily_consumption.keys())
+            last_timestamp = max(daily_consumption.keys())
+            first_time_str = datetime.fromtimestamp(first_timestamp).strftime('%H:%M:%S')
+            last_time_str = datetime.fromtimestamp(last_timestamp).strftime('%H:%M:%S')
+            
+            print(f"\nPERCEPTIA MANAGERULUI - Casa {self.house_id} - {date_str}")
+            print(f"Interval: {first_time_str} - {last_time_str}")
+            print(f"Consum total zilnic: {round(total_daily_consumption, 3)} kWh")
+            print(f"Media: {round(average_hourly_consumption, 3)} kWh | Q1: {round(q1_consumption, 3)} | Median: {round(median_consumption, 3)} | Q3: {round(q3_consumption, 3)} kWh")
+            print(f"Prag prezenta (percentila {percentile}): {round(self.consumption_threshold, 3)} kWh")
+            print(f"\nOra, Timestamp, Consum (kWh), Depaseste Prag?, Prezenta")
 
         presence_results = {}
         
-        for i, epoch_time in enumerate(sorted_times):
+        for epoch_time in sorted_times:
             consumption_value = daily_consumption[epoch_time]
             
-            # Daca consumul >= 10% din media pe ora => prezent
-            is_present = consumption_value >= self.consumption_threshold
+            # Manager percepe prezenta doar daca consumul > percentile ales
+            is_present = consumption_value > self.consumption_threshold
             presence_results[epoch_time] = is_present
             
-            hour = datetime.fromtimestamp(epoch_time).strftime('%H:%M')
-            presence_str = "DA" if is_present else "NU"
-            
-            print(hour + ",", epoch_time, ",", round(consumption_value, 3), ",", presence_str)
+            if verbose:
+                hour = datetime.fromtimestamp(epoch_time).strftime('%H:%M')
+                presence_str = "PREZENT" if is_present else "ABSENT"
+                threshold_diff = consumption_value - self.consumption_threshold
+                threshold_str = f"+{round(threshold_diff, 3)}" if threshold_diff > 0 else f"{round(threshold_diff, 3)}"
+                
+                print(f"{hour}, {epoch_time}, {round(consumption_value, 3)}, {threshold_str}, {presence_str}")
         
         total_hours = len(presence_results)
         hours_present = sum(1 for p in presence_results.values() if p)
         hours_absent = total_hours - hours_present
         presence_percentage = (hours_present / total_hours * 100) if total_hours > 0 else 0
         
-        print("\nSTATISTICI:")
-        print("  Total ore analizate:", total_hours)
-        print("  Ore cu prezenta:", hours_present, "("+str(round(presence_percentage, 1))+"%)")
-        print("  Ore fara prezenta:", hours_absent, "("+str(round(100 - presence_percentage, 1))+"%) \n")
+        if verbose:
+            print(f"\nSTATISTICI: {total_hours} ore analizate | {hours_present} prezent ({round(presence_percentage, 1)}%) | {hours_absent} absent ({round(100 - presence_percentage, 1)}%)\n")
         
         self.presence_data = presence_results
         return presence_results
@@ -83,12 +89,11 @@ class PresenceModel(EnergyProcessing):
     def is_someone_home(self, epoch_time): # Verifica daca este cineva acasa la un timestamp specific.
         return self.presence_data[epoch_time]
     
-    # Model de prezenta real bazat pe appliance-uri
-    def evaluate_real_presence_for_date(self, date_str, min_active_appliances=2):
+    def evaluate_real_presence_for_date(self, date_str, min_active_appliances=2, verbose=True):
         
         # Pentru fiecare appliance, calculez minimul consumului din ziua respectiva
         # Daca minim = 0, folosesc 0.001 pentru a permite comparatia
-        # La fiecare timestamp, daca consum_appliance > 10 * minim_zilei => appliance activ
+        # La fiecare timestamp, daca consum_appliance > 2 * minim_zilei => appliance activ
         # Daca >= min_active_appliances (default 2) appliance-uri sunt active => prezenta
 
         # Foloseste cache-ul in loc sa citeasca CSV-urile
@@ -138,23 +143,17 @@ class PresenceModel(EnergyProcessing):
         
         presence_results = {}
         
-        print("\nMODEL DE PREZENTA REAL (bazat pe appliance-uri) PENTRU CASA", self.house_id)
-        print("Data:", date_str)
-        print(f"Criterii: Minim {min_active_appliances} appliance-uri cu consum > 2x minimul zilei\n")
-        
-        # Lista appliance-uri din casa cu minimurile lor
         appliance_names = {}
         for _, row in house_appliances.iterrows():
             app_id = row['ID']
             if app_id in appliance_daily_min:
                 appliance_names[app_id] = row['Name']
         
-        print("Appliance-uri monitorizate si minimul zilei:")
-        for app_id, name in appliance_names.items():
-            print(f"  [{app_id}] {name}: {appliance_daily_min[app_id]:.4f} kWh")
-        print()
-        
-        print("Ora, Active Appliances, Prezenta")
+        if verbose:
+            print(f"\nMODEL PREZENTA REAL - Casa {self.house_id} - {date_str}")
+            print(f"Criterii: Minim {min_active_appliances} appliance-uri cu consum > 2x minimul zilei")
+            print(f"Appliance-uri monitorizate: {len(appliance_names)}")
+            print("\nOra, Active Appliances, Prezenta")
         
         # Pentru fiecare timestamp
         for epoch_time in sorted_times:
@@ -170,8 +169,8 @@ class PresenceModel(EnergyProcessing):
                 consumption = row['Value']
                 daily_min = appliance_daily_min.get(app_id, 0.001)
                 
-                # Daca consumul > 10x minimul => appliance activ
-                if consumption > 10 * daily_min:
+                # Daca consumul > 2x minimul => appliance activ
+                if consumption > 2 * daily_min:
                     active_appliances += 1
                     if app_id in appliance_names:
                         active_list.append(f"{appliance_names[app_id]}({consumption:.3f})")
@@ -180,25 +179,23 @@ class PresenceModel(EnergyProcessing):
             is_present = active_appliances >= min_active_appliances
             presence_results[epoch_time] = is_present
             
-            hour = datetime.fromtimestamp(epoch_time).strftime('%H:%M')
-            presence_str = "DA" if is_present else "NU"
-            active_str = f"{active_appliances} active"
-            
-            if active_list and is_present:
-                print(f"{hour}, {active_str} ({', '.join(active_list[:3])}{'...' if len(active_list) > 3 else ''}), {presence_str}")
-            else:
-                print(f"{hour}, {active_str}, {presence_str}")
+            if verbose:
+                hour = datetime.fromtimestamp(epoch_time).strftime('%H:%M')
+                presence_str = "DA" if is_present else "NU"
+                active_str = f"{active_appliances} active"
+                
+                if active_list and is_present:
+                    print(f"{hour}, {active_str} ({', '.join(active_list[:3])}{'...' if len(active_list) > 3 else ''}), {presence_str}")
+                else:
+                    print(f"{hour}, {active_str}, {presence_str}")
         
-        # Statistici
         total_hours = len(presence_results)
         hours_present = sum(1 for p in presence_results.values() if p)
         hours_absent = total_hours - hours_present
         presence_percentage = (hours_present / total_hours * 100) if total_hours > 0 else 0
         
-        print("\nSTATISTICI:")
-        print(f"  Total ore analizate: {total_hours}")
-        print(f"  Ore cu prezenta: {hours_present} ({presence_percentage:.1f}%)")
-        print(f"  Ore fara prezenta: {hours_absent} ({100 - presence_percentage:.1f}%)\n")
+        if verbose:
+            print(f"\nSTATISTICI: {total_hours} ore analizate | {hours_present} prezent ({presence_percentage:.1f}%) | {hours_absent} absent ({100 - presence_percentage:.1f}%)\n")
         
         return presence_results
 

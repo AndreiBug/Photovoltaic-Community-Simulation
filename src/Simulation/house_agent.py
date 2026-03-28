@@ -11,7 +11,7 @@ class HouseAgent(Agent): # Agent pentru o casa individuala care proceseza date s
         super().__init__(house_id, model)
         self.indicators = Indicators(house_id)
         self.indicators.get_power_estimated()  # Calculeaza productia pentru simulare
-        self.application_rate = application_rate  # Probabilitatea de a aplica o recomandare (0.0 - 1.0)
+        self.application_rate = application_rate  # Probabilitatea de a aplica o recomandare (0 - 1)
         
         # Consum/productie actuala si ajustata
         self.current_consumption = 0
@@ -21,6 +21,10 @@ class HouseAgent(Agent): # Agent pentru o casa individuala care proceseza date s
         
         self.current_time = None
         self.received_recommendation = ""
+        
+        # Istoric pentru tracking
+        self.consumption_history = []
+        self.production_history = []
 
         self.time_keys = sorted(
             set(self.indicators.production.keys()) & set(self.indicators.consumption.keys())
@@ -28,7 +32,11 @@ class HouseAgent(Agent): # Agent pentru o casa individuala care proceseza date s
         self.current_step = 0
 
     def step(self): # Actualizare stare casa si procesare date
-
+        
+        # Verifica daca mai exista pasi de executat
+        if self.current_step >= len(self.time_keys):
+            return
+        
         t = self.time_keys[self.current_step]
         self.current_time = t
 
@@ -65,7 +73,7 @@ class PresenceHouseAgent(HouseAgent): # Agent casa care aplica recomandari doar 
     def __init__(self, house_id, model):
         super().__init__(house_id, model, application_rate = 1.0)
         
-        self.min_active_appliances = 2  # Minim 2 appliance-uri active pentru prezenta (trebuie setat inainte!)
+        self.min_active_appliances = 2  # Minim 2 appliance-uri active pentru prezenta
         
         # Foloseste cache-ul pentru DataFrame-uri mari
         data_cache = DataDictionaries(verbose=False)
@@ -75,10 +83,11 @@ class PresenceHouseAgent(HouseAgent): # Agent casa care aplica recomandari doar 
         appliance_df = data_cache.get_appliance_df()
         self.house_appliances = appliance_df[appliance_df['HouseIDREF'] == house_id].copy()
         
-        # Pre-calculeaza TOTUL in constructor pentru performanta maxima
+        # Pre-calculeaza totul in constructor pentru performanta maxima
         self.precalculate_presence_data()
     
-    # Pre-calculeaza toate datele necesare pentru detectarea prezentei. Face toate operatiile pandas o singura data in constructor
+    # Pre-calculeaza toate datele necesare pentru detectarea prezentei (consum > 2x minim zilnic)
+    # Face toate operatiile o singura data in constructor
     def precalculate_presence_data(self):
         
         # Adauga coloane necesare
@@ -116,8 +125,8 @@ class PresenceHouseAgent(HouseAgent): # Agent casa care aplica recomandari doar 
                 consumption = hourly_grouped.get((epoch_time, app_id), 0)
                 daily_min = min_dict.get((current_date, app_id), 0.001)
                 
-                # Daca consumul > 10x minimul => appliance activ
-                if consumption > 10 * daily_min:
+                # Daca consumul > 2x minimul => appliance activ
+                if consumption > 2 * daily_min:
                     active_appliances += 1
             
             self.presence_cache[epoch_time] = (active_appliances >= self.min_active_appliances)

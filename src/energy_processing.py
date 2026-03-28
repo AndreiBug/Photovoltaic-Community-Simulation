@@ -17,7 +17,7 @@ class EnergyProcessing(House):
     def get_solar_radiation(self): # Returneaza radiatia solara (deja incarcata din loader)
         return self.solar_radiation
 
-    def get_power_estimated(self, n=10, Pm=575, f=0.8, GTSTC=1000): # Calculeaza puterea produsa estimata pentru n panouri.            
+    def get_power_estimated(self, n=10, Pm=575, f=0.8, GTSTC=1000): # Calculeaza puterea produsa estimata pentru n panouri
         if not self.solar_radiation:
             print("Radiatia solara nu este incarcata.")
             return {}

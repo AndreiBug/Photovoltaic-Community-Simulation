@@ -1,0 +1,206 @@
+\documentclass[12pt,a4paper]{report}
+
+\usepackage{iftex}
+\ifPDFTeX
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\else
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\fi
+\usepackage[main=romanian,provide=*]{babel}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0.5em}
+
+\makeatletter
+\def\@makechapterhead#1{%
+	\vspace*{-5pt}%
+	{\parindent \z@ \raggedright \normalfont
+		\Huge\bfseries #1\par\nobreak
+		\vskip 18pt}}
+\def\@makeschapterhead#1{%
+	\vspace*{-5pt}%
+	{\parindent \z@ \raggedright \normalfont
+		\Huge\bfseries #1\par\nobreak
+		\vskip 18pt}}
+\makeatother
+
+\graphicspath{{pics/}}
+
+\title{Lucrare de diplomă}
+\author{Costache Andrei Darius}
+\date{București, 2026}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \hspace*{-0.4cm}
+  \begin{tabular}{p{0.3\textwidth}p{0.4\textwidth}p{0.3\textwidth}}
+    \centering\includegraphics[height=4em]{logo/upb}                   &
+    \centering\raisebox{0.4em}{\includegraphics[height=3em]{logo/aii}} &
+    \centering\includegraphics[height=4em]{logo/acs}
+  \end{tabular}
+  \vspace{1em}
+
+  Universitatea Politehnica București\par
+  Facultatea de Automatică și Calculatoare\par
+  Departamentul de Automatică și Informatică Industrială\par
+  \vspace{2cm}
+  {\Huge\bfseries LUCRARE DE DIPLOMĂ\par}
+  \vspace{1.2cm}
+  {\Large\bfseries Sistem incluziv de recomandări pentru managementul unei comunități energetice\par}
+  \vfill
+  \begin{flushleft}
+    \textbf{Autor:} Costache Andrei Darius \\
+    \textbf{Coordonator:} Sl. Dr. Ing. Simoiu Mircea Ștefan
+  \end{flushleft}
+  \vfill
+  {\large București, 2026\par}
+\end{titlepage}
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+{\setlength{\parskip}{0pt}\tableofcontents}
+\clearpage
+
+\chapter*{1. Introducere}
+\addcontentsline{toc}{chapter}{1. Introducere}
+
+Contextul problemei pe care o rezolv
+
+Paragraf care rezuma lucrarea si evidentiaza contributia personala
+
+\clearpage
+
+\chapter*{2. Prezentarea problemei abordate}
+\addcontentsline{toc}{chapter}{2. Prezentarea problemei abordate}
+
+Trebuie sa luam oamenii in calcul atunci cand proiectam sisteme de management energetic (solutii dezvoltate pentru oameni)
+
+Cum putem partaja energia ca comunitate si cum putem sa crestem eficienta (sa utilizam cat mai multa energie din panouri) pentru a obtine un beneficiu de autonomie si autoconsum + pentru a reduce dependenta de retea?)
+
+\clearpage
+
+\chapter*{3. Metoda propusă}
+\addcontentsline{toc}{chapter}{3. Metoda propusă}
+
+Descriu modelul multiagent, sistem de recomandari, cum se executa scenariile, performante
+
+Incep cu o schema
+
+Scriu cat mai general posibil
+
+
+\clearpage
+
+\chapter*{4. Studiu de caz}
+\addcontentsline{toc}{chapter}{4. Studiu de caz}
+
+\section*{Procesul implementării}
+\addcontentsline{toc}{section}{Procesul implementării}
+
+Pentru rezolvarea problemei propuse se utilizează limbajul Python întrucât oferă o gamă variată de librării pentru manipularea datelor și analiza lor. Printre librăriile utilizate se numără: pandas pentru manipularea și analiza datelor din tabele, numpy pentru calcule, plotly pentru generarea graficelor, scipy pentru optimizare matematică prin metoda de optimizare differential evolution, mesa pentru simularea comunității bazate pe agenți.
+
+Baza de date folosită în proiect se bazează pe date măsurate ale unor case din Franța într-o perioadă de aproximativ un an. Printre tabelele din baza de date se numără: aparatele fiecărei case, tipul aparatelor, consumul fiecărui aparat măsurat la un interval de 10 minute, casele pentru care s-au făcut măsurătorile, stații meteo din Franța din apropierea caselor și diferite date despre vreme precum temperatura, viteza și direcția vântului, umiditate și radiația solară. Pentru utilizarea rapidă a valorilor din baza de date au fost extrase tabelele sub formă de csv-uri, mai apoi creând dicționare specifice valorilor care se iau în considerare pentru a vavea o accesare cât mai eficientă.
+
+După o analiză detaliată a datelor s-au întâmpinat câteva obstacole și au trebuit să fie create funcții pentru curățarea, corectarea sau filtrarea acestora. Dintre aceste funcții amintim: ștergerea caselor cu mai puțin de un an de date pentru o analiză de minim un an, normalizarea spike-urilor de consum care apar la măsurarea consumului la 10 minute prin compararea fiecărei valori cu suma dintre valoarea următoare și cea precedentă înmulțită cu un threshold, în cazul actual fiind 3, ștergerea caselor cu minim 30 de zile consecutive fără date de consum, ștergerea caselor fără radiație solară înregistrată, corectarea stațiilor meteo unde erau înregistrate valori sub 0, aceste înregistrări fiind imposibile. La final pentru uniformizare au fost eliminate toate casele care se încadrau în aceste criterii și au fost eliminate și toate datele asociate acestor case din celelalte csv-uri.
+
+Următoarea etapă constă în calculul consumului de energie și a producției pentru fiecare casă în parte pe baza câtorva parametri. Pentru consumul casei se preiau valorile din csv care sunt înregistrate în wați o dată la 10 minute. Pentru calculul producției este necesară utilizarea mai multor parametri: Pm este puterea nominală a unui panou în wați, n este numărul de panouri, f este factorul de randament, G(t) este radiația solară la momentul de timp t, GTSTC este iradierea solară de referință la condiții standard de test pentru panouri fotovoltaice. La final, ambele valori pentru consum și producție sunt transformate în kWh.
+
+-	FORMULE CONSUM + PRODUCȚIE
+
+Pentru o analiză cât mai corectă a modelului care o să fie implementat trebuie calculați niște indicatori de sustenabilitate și indicatori economici: autoconsum (SC), autosuficiență (SS), producția netă echivalentă de energie electrică (NEEG) și valoarea actualizată netă (NPV).
+
+-	FORMULE PENTRU SS, SC, NEEG, NPV
+
+Autoconsumul indică ce procent din energia produsă de panourile fotovoltaice este consumată direct de către locuință. Autosuficiența indică ce procent din consumul de energie al locuinței este acoperit de energia produsă de panourile fotovoltaice. Producția netă echivalentă de energie electrică reprezintă cantitatea de energie electrică produsă de sistemul fotovoltaic, luând în considerare și performanțele reale ale panourilor. Valoarea actualizată netă este indicatorul economic care arată dacă o investiție este profitabilă, ținând cont de numărul de ani pe care aceasta este făcută. Cu timpul NPV-ul crește, iar acesta ne arată în cât timp ne putem scoate investiția inițială.
+
+După calculul indicatorilor a fost implementată o metodă de optimizare pentru fiecare dintre ei utilizând differential evolution. Au fost create funcții obiectiv pentru maximizarea SS, SC și NEEG. Pentru rezultate optime s-au efectuat succesiv maximizări pentru SS, SC și ambele în același timp și minimizări pentru NEEG. De asemenea, maximizarea simultan a celor 2 indicatori, SS și SC, este echivalentă cu minimizarea NEEG.
+
+Urmează crearea sistemului de recomandări și a comunității. Pentru el a fost creată o comunitate de case unde fiecare casă este extrasă din baza de date cu carecteristicile ei. Există 4 agenți în total pentru simularea aceasta: 2 sunt agenți pentru case (PROBABILISTIC și PRESENCE), 2 sunt agenți de recomandări de tip manager de comunitate (COMMUNITY și PRESENCE). Pentru trimiterea recomandărilor a fost creat un criteriu pentru ambii agenți de recomandări astfel: dacă consumul este cu 30\% mai mult sau mai puțin decât producția atunci se trimite recomandare de reducere sau creștere a consumului.
+
+Agenții pentru casa au fost implementați astfel: Probabilistic aplică recomandările în funcție de un procent dat ca parametru pentru toată comunitatea sau de un vector de procente pentru fiecare casă în parte din comunitate, iar Presence aplică recomandările dacă există prezență în casă bazată pe un model de prezență real. Modelul de prezență real a fost realizat pe baza consumurilor fiecărui aparat din casă. Pentru fiecare zi este calculat consumul minim al fiecărui aparat în ziua respectivă, iar dacă consumul unui aparat este de 2 ori mai mare decât minimul se consideră activ. Dacă există minim 2 aparate active se consideră prezență în casă. Agentul va aplica recomandarea dacă este prezență în casă și dacă a primit recomandare.
+
+Agenții de recomandări de tip manager de comunitate au fost implementați astfel: Community se uită la consumul înregistrat de toată comunitatea și dacă este mai mic sau mai mare cu 30\% decât producția comunității va trimite recomandarea, iar Presence se uită la prezența fiecărei case bazată pe un model de prezență estimată. Modelul de prezență estimată se uită pentru fiecare zi la toate consumurile pe oră și în top 60\% din acestea este declarată prezența în casă. Prin urmare, din 24 de ore o casă ar trebui să fie înregistrată cu prezență aproximativ 14 ore. S-a utilizat această metodă cu un procent de 60\% testând variații ale algoritmului și observând că procentajul acesta este optim pentru sinergia cu agentul de case Presence. În final, agentul va trimite recomandarea dacă este detectată prezența și dacă îndeplinește condiția de ±30\% consum față de producție.
+
+Astfel, se vor forma 4 cazuri cu cei 2 agenți de recomandare și cei 2 agenți pentru case:
+
+•	COMMUNITY + PROBABILISTIC - Managerul trimite recomandări în funcție de consumul înregistrat față de producție (±30\%), iar casa o aplică cu o probabilitate stabilită pentru comunitate sau mai multe probabilități specifice pentru fiecare casă;
+
+•	COMMUNITY + PRESENCE – Managerul trimite recomandări în funcție de consumul înregistrat față de producție (±30\%), iar casa o aplică dacă este detectată prezența pe baza modelului real;
+
+•	PRESENCE + PROBABILISTIC - Managerul trimite recomandări pe baza prezenței estimate și pe baza consumului înregistrat față de producție (±30\%), iar casa aplică recomandarea cu o probabilitate stabilită pentru comunitate sau mai multe probabilități specifice pentru fiecare casă;
+
+•	PRESENCE + PRESENCE - Managerul trimite recomandări pe baza prezenței estimate și pe baza consumului înregistrat față de producție (±30\%), iar casa o aplică dacă este detectată prezența pe baza modelului real;
+
+Pe parcursul proiectului au fost create mai multe grafice folosind librăria plotly care au fost analizate și au ajutat la îmbunătățirea algoritmilor. Printre acestea se numără: profil de consum la 10 minute pe o zi pentru o casă, profil de consum orar pe o zi pentru o casă, profil de consum zilnic pe un an pentru o casă, producția solară pe ore dintr-o zi pentru o casă, comparație de consum și producție pe ore dintr-o zi, evoluția NPV în funcție de numărul de ani, comparații între prezența estimată și prezența reală, performanța celor 4 scenarii de recomandări pentru un număr fix de case, scenariul optim pentru maximizarea SS și SC în funcție de dimensiunea comunității, comparații între scenariile de recomandări.
+
+
+Descriu datele folosite, de unde am toate datele, cum dimensionez centrala fotovoltaica si cum definesc scenarii. (Date concrete, 10 case, 5 panouri...)
+
+Rezultate si interpretarea lor
+
+\clearpage
+
+\chapter*{5. Concluzii}
+\addcontentsline{toc}{chapter}{5. Concluzii}
+
+3 paragrafe:
+
+1. un rezumat mic al lucrarii + contributie
+
+2. limitari ale metodei propuse (ex: nu am date concrete de prezenta (am folosit 2 modele imaginate de mine))
+
+3. Dezvoltari ulterioare ale lucrarii
+
+\clearpage
+
+\renewcommand{\bibname}{6. Bibliografie}
+\begin{thebibliography}{00}
+\addcontentsline{toc}{chapter}{6. Bibliografie}
+
+\bibitem{simoiu2021jcp}
+M.~S.~Simoiu, I.~Fagarasan, S.~Ploix, and V.~Calofir,
+``Optimising the self-consumption and self-sufficiency: A novel approach for adequately sizing a photovoltaic plant with application to a metropolitan station,''
+\emph{Journal of Cleaner Production}, vol.~327, Art.~no.~129399, 2021.
+
+\bibitem{murphy2012ml}
+K.~P.~Murphy, \emph{Machine Learning: A Probabilistic Perspective}.
+Cambridge, MA, USA: MIT Press, 2012.
+
+\bibitem{duffie2020solar}
+J.~A.~Duffie, W.~A.~Beckman, and N.~Blair,
+\emph{Solar Engineering of Thermal Processes, Photovoltaics and Wind}, 5th~ed.
+Hoboken, NJ, USA: Wiley, 2020.
+
+\bibitem{barabino2023energycommunities}
+E.~Barabino, D.~Fioriti, E.~Guerrazzi, I.~Mariuzzo, D.~Poli, M.~Raugi, E.~Rezaei, E.~Schito, and D.~Thomopulos,
+``Energy communities: A review on trends, energy system modelling, business models, and optimisation objectives,''
+\emph{Sustainable Energy, Grids and Networks}, vol.~36, Art.~no.~101187, 2023.
+
+\bibitem{simoiu2022aqtr}
+M.~S.~Simoiu, I.~Fagarasan, S.~Ploix, V.~Calofir, and S.~S.~Iliescu,
+``Towards energy communities: A multi-agent case study,''
+in \emph{Proc. IEEE Int. Conf. Automation, Quality and Testing, Robotics (AQTR)},
+Cluj-Napoca, Romania, 2022, pp.~1--6.
+
+\bibitem{simoiu2022renewable}
+M.~S.~Simoiu, I.~Fagarasan, S.~Ploix, and V.~Calofir,
+``Modeling the energy community members' willingness to change their behaviour with multi-agent systems: A stochastic approach,''
+\emph{Renewable Energy}, vol.~194, pp.~1233--1246, 2022.
+
+\end{thebibliography}
+
+\clearpage
+
+\chapter*{7. Lista contribuțiilor personale}
+\addcontentsline{toc}{chapter}{7. Lista contribuțiilor personale}
+
+\end{document}

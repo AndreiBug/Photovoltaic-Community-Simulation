@@ -1,6 +1,7 @@
 from mesa import Agent
 import pandas as pd
 from datetime import datetime
+import numpy as np
 
 class RecommendationAgent(Agent): # Agent central care analizeaza consumul comunitatii si trimite recomandari tuturor caselor
     
@@ -44,10 +45,15 @@ class PresenceRecommendationAgent(Agent): # Agent care analizeaza fiecare casa i
         self.house_presence_threshold = {}  # Pragul de prezenta pentru fiecare casa
         self.initialized = False  # Flag pentru a calcula pragurile o singura data
     
-    def calculate_presence_thresholds(self): # Calculeaza pragul de prezenta (10% din media) pentru fiecare casa din comunitate
+    def calculate_presence_thresholds(self, percentile=40): # Calculeaza pragul de prezenta folosind metoda percentile pentru fiecare casa din comunitate
+
         for house in self.model.houses:
-            avg_consumption = sum(house.indicators.consumption.values()) / len(house.indicators.consumption)
-            self.house_presence_threshold[house.unique_id] = avg_consumption * 0.1
+            # Converteste valorile consumului la array pentru calcul percentile
+            consumption_values = np.array(list(house.indicators.consumption.values()))
+            
+            # Prag de prezenta = percentile ales din distributia consumului casei
+            threshold = np.percentile(consumption_values, percentile)
+            self.house_presence_threshold[house.unique_id] = threshold
         self.initialized = True
     
     def step(self): # Analizeaza fiecare casa individual si trimite recomandari personalizate
@@ -64,12 +70,10 @@ class PresenceRecommendationAgent(Agent): # Agent care analizeaza fiecare casa i
         current_production = house.current_production
         presence_threshold = self.house_presence_threshold.get(house.unique_id, 0)
         
-        # Verifica daca e cineva acasa (model manager: 10% din media)
+        # Verifica daca e cineva acasa (model manager: metoda percentile)
         is_present = current_consumption >= presence_threshold
         
         if not is_present:
-            return "BALANCED"
-        if current_production == 0:
             return "BALANCED"
         if current_consumption > 1.3 * current_production:
             return "REDUCE_CONSUMPTION"
