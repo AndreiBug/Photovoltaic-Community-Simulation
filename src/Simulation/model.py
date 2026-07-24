@@ -13,7 +13,7 @@ class CommunityModel(Model): # Model pentru o comunitate de case cu agent de rec
     # agent_type = "100", "75", "50", "25" - doar pentru house_type probabilistic, determina probabilitatea de aplicare a recomandarii
     # specific_house_id = ID-ul unei case specifice (optional) - daca este setat, se foloseste doar aceasta casa
     
-    def __init__(self, num_houses = 3, recommendation_type = "community", house_type = "probabilistic", agent_type = "100", application_rates = None, specific_house_id = None):
+    def __init__(self, num_houses = 3, recommendation_type = "community", house_type = "probabilistic", agent_type = "100", application_rates = None, specific_house_id = None, recommendation_time_window = None, fixed_community_production = None):
         super().__init__()
         self.step_count = 0
         self.num_houses = num_houses
@@ -21,6 +21,36 @@ class CommunityModel(Model): # Model pentru o comunitate de case cu agent de rec
         self.house_type = house_type
         self.agent_type = agent_type
         self.application_rates = application_rates
+        self.recommendation_time_window = recommendation_time_window
+        self.fixed_community_production = fixed_community_production
+
+        if self.fixed_community_production is not None:
+            if isinstance(self.fixed_community_production, dict):
+                if not self.fixed_community_production:
+                    print("Seria de productie a centralei este vida. Se foloseste productia reala cumulata a caselor.")
+                    self.fixed_community_production = None
+            elif not isinstance(self.fixed_community_production, (int, float)) or self.fixed_community_production < 0:
+                print("Productia centralei este invalida. Se foloseste productia reala cumulata a caselor.")
+                self.fixed_community_production = None
+
+        if self.recommendation_time_window is not None:
+            if (
+                not isinstance(self.recommendation_time_window, tuple)
+                or len(self.recommendation_time_window) != 2
+            ):
+                print("Fereastra orara invalida. Se foloseste trimiterea recomandarilor toata ziua.")
+                self.recommendation_time_window = None
+            else:
+                start_hour, end_hour = self.recommendation_time_window
+                if (
+                    not isinstance(start_hour, int)
+                    or not isinstance(end_hour, int)
+                    or start_hour < 0
+                    or end_hour > 23
+                    or start_hour > end_hour
+                ):
+                    print("Fereastra orara invalida. Se foloseste trimiterea recomandarilor toata ziua.")
+                    self.recommendation_time_window = None
         
         # Dictionare pentru stocare consum/productie fara si cu recomandari
         self.consumption_without_recommendations = {}
@@ -91,6 +121,31 @@ class CommunityModel(Model): # Model pentru o comunitate de case cu agent de rec
         else:
             print(f"Tip casa necunoscut: {house_type}. Optiuni: 'probabilistic' sau 'presence'")
 
+    def can_send_recommendations(self, current_time):
+        if current_time is None:
+            return False
+
+        if self.recommendation_time_window is None:
+            return True
+
+        start_hour, end_hour = self.recommendation_time_window
+        hour = pd.to_datetime(current_time, unit='s').hour
+        return start_hour <= hour <= end_hour
+
+    def get_total_production(self, current_time=None):
+        if self.fixed_community_production is not None:
+            if isinstance(self.fixed_community_production, dict):
+                if current_time is None:
+                    return 0
+                return float(self.fixed_community_production.get(current_time, 0))
+            return float(self.fixed_community_production)
+        return sum(h.current_production for h in self.houses)
+
+    def get_house_production(self, house, current_time=None):
+        if self.fixed_community_production is not None:
+            return self.get_total_production(current_time)
+        return house.current_production
+
     def step(self): # Un pas de simulare pentru toata comunitatea
         for house in self.houses:
             house.step()
@@ -99,16 +154,22 @@ class CommunityModel(Model): # Model pentru o comunitate de case cu agent de rec
         current_time = self.houses[0].current_time if self.houses else None
         
         if current_time is not None:
+            central_production = self.get_total_production(current_time)
+
             # Actualizeaza istoricul fiecarei case DUPA aplicarea recomandarii
             for house in self.houses:
                 house.consumption_history.append(house.current_consumption_adjusted)
+                if self.fixed_community_production is not None:
+                    house.current_production_adjusted = central_production
+                else:
+                    house.current_production_adjusted = house.current_production
                 house.production_history.append(house.current_production_adjusted)
             
             # Calculeaza totaluri pentru acest timestamp
             total_consumption = sum(h.current_consumption for h in self.houses)
-            total_production = sum(h.current_production for h in self.houses)
+            total_production = central_production
             total_consumption_adjusted = sum(h.current_consumption_adjusted for h in self.houses)
-            total_production_adjusted = sum(h.current_production_adjusted for h in self.houses)
+            total_production_adjusted = central_production
             
             self.consumption_without_recommendations[current_time] = total_consumption
             self.production_without_recommendations[current_time] = total_production

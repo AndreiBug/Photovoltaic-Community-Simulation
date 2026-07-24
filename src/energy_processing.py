@@ -17,13 +17,15 @@ class EnergyProcessing(House):
     def get_solar_radiation(self): # Returneaza radiatia solara (deja incarcata din loader)
         return self.solar_radiation
 
-    def get_power_estimated(self, n=10, Pm=575, f=0.8, GTSTC=1000): # Calculeaza puterea produsa estimata pentru n panouri
+    def get_power_estimated(self, n=3, Pm=575, f=0.8, GTSTC=1000): # Calculeaza puterea produsa estimata pentru n panouri
         if not self.solar_radiation:
             print("Radiatia solara nu este incarcata.")
             return {}
-        
+
+        # Radiatia din BD este in J/cm2/h (Meteo-France); conversia la W/m2: * 10000/3600
+        J_cm2_to_W_m2 = 10000 / 3600
         self.production = {
-            t: (Pm * n * f * G / GTSTC) / 6000  # W*10min -> kWh
+            t: (Pm * n * f * (G * J_cm2_to_W_m2) / GTSTC) / 1000  # kWh/h
             for t, G in self.solar_radiation.items()
         }
         

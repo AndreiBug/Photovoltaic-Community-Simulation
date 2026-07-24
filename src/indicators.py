@@ -72,13 +72,16 @@ class Indicators(EnergyProcessing):
         self.NEEG = imported_energy + exported_energy
         return self.NEEG
 
-    def calculate_NPV(self, Cwp = 0.1, Pm = 500, n = 10, Y = 20, r = 0.05, price_per_kWh = 0.2): # Calculeaza lista NPV pe fiecare an pentru perioada de Y ani
+    def calculate_NPV(self, Cwp = 0.6, Pm = 575, n = 5, Y = 20, r = 0.05, price_per_kWh = 0.2): # Calculeaza lista NPV pe fiecare an pentru perioada de Y ani
         # Cwp = cost per watt
         # Pm = puterea unui panou (W)
         # n = numar panouri
         # Y = numar ani
         # r = rata de actualizare
         # price_per_kWh = pret energie
+
+        # Recalculeaza productia pentru n panouri la Pm W, sa fie consistenta cu CapEX
+        self.get_power_estimated(n=n, Pm=Pm)
 
         if not self.is_production_available() or not self.is_consumption_available():
             self.NPV = [0] * Y

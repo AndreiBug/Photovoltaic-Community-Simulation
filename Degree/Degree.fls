@@ -55,8 +55,24 @@ INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics-
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics-def\xetex.def
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics-def\xetex.def
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\graphics-def\xetex.def
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\float\float.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\float\float.sty
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\tools\indentfirst.sty
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\tools\indentfirst.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\placeins\placeins.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\placeins\placeins.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\amsmath\amsmath.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\amsmath\amsmath.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\amsmath\amsopn.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\amsmath\amstext.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\amsmath\amstext.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\amsmath\amsgen.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\amsmath\amsgen.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\amsmath\amsbsy.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\amsmath\amsbsy.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\amsmath\amsopn.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\url\url.sty
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\tex\latex\url\url.sty
 INPUT .\Degree.aux
 INPUT .\Degree.aux
 INPUT Degree.aux
@@ -67,6 +83,9 @@ INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy8.tfm
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy6.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmex10.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\cmextra\cmex8.tfm
+INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\cmextra\cmex7.tfm
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr8.tfm
 INPUT C:\Users\Costache Andrei\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr6.tfm
@@ -81,4 +100,36 @@ INPUT .\Degree.toc
 INPUT .\Degree.toc
 INPUT Degree.toc
 OUTPUT Degree.toc
+INPUT .\pics\arhitectura.png
+INPUT .\pics\arhitectura.png
+INPUT .\pics\diagrama_secventiala.png
+INPUT .\pics\diagrama_secventiala.png
+INPUT .\pics\Flow_chart.png
+INPUT .\pics\Flow_chart.png
+INPUT .\pics\consum_appliance_zi.png
+INPUT .\pics\consum_appliance_zi.png
+INPUT .\pics\consum_ora_zi.png
+INPUT .\pics\consum_ora_zi.png
+INPUT .\pics\consum_appliance_zi_weekend.png
+INPUT .\pics\consum_appliance_zi_weekend.png
+INPUT .\pics\consum_ora_zi_weekend.png
+INPUT .\pics\consum_ora_zi_weekend.png
+INPUT .\pics\consum_vs_prod_initial.png
+INPUT .\pics\consum_vs_prod_initial.png
+INPUT .\pics\consum_vs_prod_opt_iarna.png
+INPUT .\pics\consum_vs_prod_opt_iarna.png
+INPUT .\pics\consum_vs_prod_opt_vara.png
+INPUT .\pics\consum_vs_prod_opt_vara.png
+INPUT .\pics\scenarii_32_100.png
+INPUT .\pics\scenarii_32_100.png
+INPUT .\pics\scenarii_32_32.png
+INPUT .\pics\scenarii_32_32.png
+INPUT .\pics\scenarii_32_300.png
+INPUT .\pics\scenarii_32_300.png
+INPUT .\pics\scenarii_100_300.png
+INPUT .\pics\scenarii_100_300.png
+INPUT .\pics\scenarii_panouri_variabile.png
+INPUT .\pics\scenarii_panouri_variabile.png
+INPUT .\pics\scenarii_panouri_fixe.png
+INPUT .\pics\scenarii_panouri_fixe.png
 INPUT Degree.aux

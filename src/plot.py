@@ -1,3 +1,4 @@
+import gc
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -246,7 +247,7 @@ def plot_hourly_production_for_day(indicator_obj, day = None): # Plotare product
 
     fig.write_html(os.path.join(INITIAL_DATA_DIR, "Productie_zi.html"))
 
-def plot_hourly_consumption_and_production_for_day(indicator_obj, target_date, html_filename=None): 
+def plot_hourly_consumption_and_production_for_day(indicator_obj, target_date, html_filename=None, n=None):
     # Plotare consum si productie pe acelasi grafic (pentru date optimizate sau initiale)
 
     df = data_cache.get_consumption_df()
@@ -270,12 +271,19 @@ def plot_hourly_consumption_and_production_for_day(indicator_obj, target_date, h
     hourly_consumption = df.groupby('Hour')['Value'].sum().reset_index()
     hourly_consumption['Value'] /= 6000
 
+    if n is not None:
+        original_production = indicator_obj.production.copy()
+        indicator_obj.get_power_estimated(n=n)
+
     if not hasattr(indicator_obj, 'production') or not indicator_obj.production:
         print("Datele de productie nu sunt disponibile.")
         return
 
     production_data = {datetime.fromtimestamp(int(k)): v for k, v in indicator_obj.production.items()}
     daily_production = {t: v for t, v in production_data.items() if t.date() == target_day}
+
+    if n is not None:
+        indicator_obj.production = original_production
 
     if not daily_production:
         print("Nu exista productie in ziua " + str(target_day))
@@ -300,17 +308,19 @@ def plot_hourly_consumption_and_production_for_day(indicator_obj, target_date, h
         hovertemplate='Ora: %{x|%H:%M}<br>Consum: %{y:.2f} kWh<extra></extra>'
     ))
 
+    production_label = f'Productie {n} panouri (kWh)' if n is not None else 'Productie (kWh)'
     fig.add_trace(go.Scatter(
         x=hourly_production['Hour'],
         y=hourly_production['Production'],
         mode='lines+markers',
-        name='Productie (kWh)',
+        name=production_label,
         line=dict(color='orange'),
         hovertemplate='Ora: %{x|%H:%M}<br>Productie: %{y:.2f} kWh<extra></extra>'
     ))
 
+    title_n = f' ({n} panouri)' if n is not None else ''
     fig.update_layout(
-        title="Consum vs Productie in ziua " + str(target_day) + ", casa " + str(indicator_obj.house_id),
+        title="Consum vs Productie in ziua " + str(target_day) + ", casa " + str(indicator_obj.house_id) + title_n,
         xaxis_title="Ora",
         yaxis_title="Energie (kWh)",
         xaxis=dict(tickformat='%H:%M'),
@@ -348,7 +358,7 @@ def plot_NPV_over_years(indicator_obj, Cwp = 0.6, Pm = 575, n = 10, Y = 20, r = 
     fig.update_layout(
         title=f"Evolutia NPV pe {Y} ani (Casa {indicator_obj.house_id})",
         xaxis_title="Ani",
-        yaxis_title="NPV (€)",
+        yaxis_title="NPV (EUR)",
         hovermode="x unified"
     )
 
@@ -525,21 +535,18 @@ def plot_presence_comparison(house_id, date_str, min_active_appliances = 2, perc
     fig.update_yaxes(title_text="Consum (kWh)", row=4, col=1)
     fig.update_yaxes(title_text="Productie (kWh)", row=5, col=1)
     
-    # Calculeaza statistici de concordanta
-    common_timestamps = set(manager_timestamps) & set(real_timestamps)
-    if common_timestamps:
-        agreements = sum(1 for t in common_timestamps if manager_presence[t] == real_presence[t])
-        total = len(common_timestamps)
-        agreement_rate = (agreements / total) * 100
-        
-        # Calculeaza ore prezenta pentru fiecare model
-        manager_hours = sum(1 for t in manager_timestamps if manager_presence[t])
-        real_hours = sum(1 for t in real_timestamps if real_presence[t])
-        
+    # Calculeaza indicatorul de acuratete perceptie vs prezenta reala
+    accuracy_stats = presence_model.calculate_presence_accuracy_from_data(
+        manager_presence,
+        real_presence,
+        verbose=False,
+    )
+
+    if accuracy_stats["total_points"] > 0:
         title_text = (f'Comparatie perceptie manager vs prezenta reala - {date_str}<br>'
-                     f'<sub>Concordanta: {agreement_rate:.1f}% | '
-                     f'Manager: {manager_hours}h prezenta | '
-                     f'Real: {real_hours}h prezenta</sub>')
+                     f'<sub>Acuratete: {accuracy_stats["accuracy_pct"]:.1f}% | '
+                     f'Manager: {accuracy_stats["manager_presence_hours"]}h prezenta | '
+                     f'Real: {accuracy_stats["real_presence_hours"]}h prezenta</sub>')
     else:
         title_text = f'Comparatie perceptie manager vs prezenta reala - {date_str}'
     
@@ -555,7 +562,7 @@ def plot_presence_comparison(house_id, date_str, min_active_appliances = 2, perc
     output_file = os.path.join(RESULTS_DIR, f"Comparatie_prezenta_casa_{house_id}.html")
     fig.write_html(output_file)
 
-def plot_scenarios_ss_sc(num_houses): # Ploteaza cele 4 scenarii de agenti pe un grafic 2D cu 1-SS si 1-SC
+def plot_scenarios_ss_sc(num_houses, fixed_community_production=None): # Ploteaza cele 4 scenarii de agenti pe un grafic 2D cu 1-SS si 1-SC
     
     from Simulation.model import CommunityModel
     from indicators import Indicators
@@ -577,7 +584,7 @@ def plot_scenarios_ss_sc(num_houses): # Ploteaza cele 4 scenarii de agenti pe un
     
     # Ruleaza fiecare scenariu
     for i, config in enumerate(scenario_configs):
-        model = CommunityModel(num_houses=num_houses, **config)
+        model = CommunityModel(num_houses=num_houses, fixed_community_production=fixed_community_production, **config)
         
         num_steps = len(model.houses[0].time_keys)
         for _ in range(num_steps):
@@ -590,7 +597,9 @@ def plot_scenarios_ss_sc(num_houses): # Ploteaza cele 4 scenarii de agenti pe un
         
         ss = temp_indicator.calculate_indicator("SS")
         sc = temp_indicator.calculate_indicator("SC")
-        
+        del model
+        gc.collect()
+
         scenarios.append({
             "name": scenario_names[i],
             "SS": ss,
@@ -672,19 +681,42 @@ def plot_scenarios_ss_sc(num_houses): # Ploteaza cele 4 scenarii de agenti pe un
     
     return scenarios
 
-def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None): # Ploteaza cele 4 scenarii pentru diferite numere de case
+def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None, fixed_community_production=None,
+                                          panels_per_house=None, fixed_panel_count=None,
+                                          house_id_for_production=None,
+                                          panel_power_w=575, performance_factor=0.8): # Ploteaza cele 4 scenarii pentru diferite numere de case
     # num_houses_list: lista cu nr de case (default: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
     # max_steps: nr maxim de pasi de simulare (None = toti pasi)
-    
+    # panels_per_house: daca este setat, numarul de panouri ale centralei variaza odata cu numarul de case
+    #   (panel_count = panels_per_house * num_houses), iar fixed_community_production este recalculat pentru
+    #   fiecare dimensiune de comunitate. Necesita house_id_for_production pentru radiatia solara.
+    # fixed_community_production este folosit doar daca panels_per_house este None (productie fixa, constanta)
+
     from Simulation.model import CommunityModel
     from indicators import Indicators
     import time
-    
+
     if num_houses_list is None:
         num_houses_list = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]  # Simulare pentru toate dimensiunile
-    
+
+    variable_panels = panels_per_house is not None
+    if variable_panels and house_id_for_production is None:
+        print("house_id_for_production trebuie specificat cand panels_per_house este folosit. Se foloseste productia fixa primita ca parametru.")
+        variable_panels = False
+
+    fixed_panels = fixed_panel_count is not None and not variable_panels
+    if fixed_panels:
+        if house_id_for_production is None:
+            print("house_id_for_production trebuie specificat cand fixed_panel_count este folosit.")
+            fixed_panels = False
+        else:
+            production_indicator = Indicators(house_id_for_production)
+            fixed_community_production = production_indicator.get_power_estimated(
+                n=fixed_panel_count, Pm=panel_power_w, f=performance_factor
+            )
+
     colors = ['blue', 'green', 'orange', 'red', 'purple', 'cyan', 'magenta', 'brown', 'pink', 'lime']
-    
+
     scenario_names = [
         "Community + Probabilistic",
         "Community + Presence",
@@ -701,9 +733,9 @@ def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None): 
     
     # Simboluri diferite pentru cele 4 scenarii
     symbols = ['circle', 'square', 'diamond', 'cross']
-    
+
     fig = go.Figure()
-    
+
     all_data = []
     
     total_simulations = len(num_houses_list) * len(scenario_configs)
@@ -716,13 +748,24 @@ def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None): 
     # Itereaza prin fiecare numar de case
     for houses_idx, num_houses in enumerate(num_houses_list):
         color = colors[houses_idx % len(colors)]
-        
+
+        # Recalculeaza productia centralei pentru numarul curent de panouri (panels_per_house * num_houses)
+        if variable_panels:
+            panel_count = panels_per_house * num_houses
+            production_indicator = Indicators(house_id_for_production)
+            current_fixed_community_production = production_indicator.get_power_estimated(
+                n=panel_count, Pm=panel_power_w, f=performance_factor
+            )
+        else:
+            panel_count = fixed_panel_count
+            current_fixed_community_production = fixed_community_production
+
         # Ruleaza fiecare scenariu
         for scenario_idx, config in enumerate(scenario_configs):
             current_simulation += 1
             sim_start = time.time()
-            
-            model = CommunityModel(num_houses=num_houses, **config)
+
+            model = CommunityModel(num_houses=num_houses, fixed_community_production=current_fixed_community_production, **config)
             
             num_steps = len(model.houses[0].time_keys)
             if max_steps is not None:
@@ -738,12 +781,15 @@ def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None): 
             
             ss = temp_indicator.calculate_indicator("SS")
             sc = temp_indicator.calculate_indicator("SC")
-            
+            del model
+            gc.collect()
+
             sim_duration = time.time() - sim_start
             duration_per_houses[num_houses].append(sim_duration)
             
             data_point = {
                 "num_houses": num_houses,
+                "panel_count": panel_count,
                 "scenario": scenario_names[scenario_idx],
                 "SS": ss,
                 "SC": sc,
@@ -752,13 +798,17 @@ def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None): 
                 "duration_s": sim_duration
             }
             all_data.append(data_point)
-            
+
+            show_panels = variable_panels or fixed_panels
+            legend_label = f'{num_houses} case ({panel_count} panouri)' if show_panels else f'{num_houses} case'
+            panels_info = f' ({panel_count} panouri)' if show_panels else ''
+
             # Adauga punct pe grafic
             fig.add_trace(go.Scatter(
                 x=[1 - ss],
                 y=[1 - sc],
                 mode='markers',
-                name=f'{num_houses} case' if scenario_idx == 0 else None,
+                name=legend_label if scenario_idx == 0 else None,
                 legendgroup=f'group{houses_idx}',
                 showlegend=(scenario_idx == 0),
                 marker=dict(
@@ -768,7 +818,7 @@ def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None): 
                     line=dict(width=1, color='black')
                 ),
                 hovertemplate=(
-                    f'<b>{num_houses} case - {scenario_names[scenario_idx]}</b><br>'
+                    f'<b>{num_houses} case{panels_info} - {scenario_names[scenario_idx]}</b><br>'
                     f'1-SS: {1-ss:.4f}<br>'
                     f'1-SC: {1-sc:.4f}<br>'
                     f'SS: {ss:.4f}<br>'
@@ -780,10 +830,15 @@ def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None): 
     
     # Formateaza titlul cu informatii despre simulare
     steps_info = f"(maxim {max_steps} pasi)" if max_steps else "(toti pasii disponibili)"
-    
+    panels_title_info = (
+        f", panouri = {panels_per_house} x nr. case" if variable_panels
+        else f", {fixed_panel_count} panouri fixe" if fixed_panels
+        else ""
+    )
+
     fig.update_layout(
         title={
-            'text': f"<b>Scenarii de agenti pentru diferite dimensiuni de comunitate</b><br><sub>Comparatie indicatori 1-SS vs 1-SC (cu recomandari) {steps_info}</sub>",
+            'text': f"<b>Scenarii de agenti pentru diferite dimensiuni de comunitate</b><br><sub>Comparatie indicatori 1-SS vs 1-SC (cu recomandari) {steps_info}{panels_title_info}</sub>",
             'x': 0.5,
             'xanchor': 'center',
             'y': 0.95,
@@ -858,7 +913,8 @@ def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None): 
     scenario_list = [s['scenario'] for s in best_scenarios]
     ss_list = [s['SS'] for s in best_scenarios]
     sc_list = [s['SC'] for s in best_scenarios]
-    
+    panel_count_list = [s.get('panel_count') for s in best_scenarios]
+
     # Defineste culori pentru cele 4 scenarii
     scenario_colors = {
         "Community + Probabilistic": 'blue',
@@ -866,9 +922,10 @@ def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None): 
         "Presence + Probabilistic": 'green',
         "Presence + Presence": 'purple'
     }
-    
+
     colors_for_points = [scenario_colors.get(s, 'gray') for s in scenario_list]
-    
+
+    panel_count_template = 'Numar panouri: %{customdata[3]}<br>' if (variable_panels or fixed_panels) else ''
     fig2.add_trace(go.Scatter(
         x=houses_list,
         y=avg_list,
@@ -883,16 +940,22 @@ def plot_scenarios_ss_sc_multiple_houses(num_houses_list=None, max_steps=None): 
         hovertemplate=(
             '<b>%{customdata[0]}</b><br>' +
             'Numar case: %{x}<br>' +
+            panel_count_template +
             'Medie (SS+SC)/2: %{y:.4f}<br>' +
             'SS: %{customdata[1]:.4f}<br>' +
             'SC: %{customdata[2]:.4f}<extra></extra>'
         ),
-        customdata=list(zip(scenario_list, ss_list, sc_list))
+        customdata=list(zip(scenario_list, ss_list, sc_list, panel_count_list))
     ))
-    
+
+    panels_title_info2 = (
+        f", panouri = {panels_per_house} x nr. case" if variable_panels
+        else f", {fixed_panel_count} panouri fixe" if fixed_panels
+        else ""
+    )
     fig2.update_layout(
         title={
-            'text': '<b>Scenariul cu media (SS+SC)/2 cea mai mare pentru fiecare dimensiune de comunitate</b><br><sub>Distributie pe numar de case</sub>',
+            'text': f'<b>Scenariul cu media (SS+SC)/2 cea mai mare pentru fiecare dimensiune de comunitate</b><br><sub>Distributie pe numar de case{panels_title_info2}</sub>',
             'x': 0.5,
             'xanchor': 'center',
             'y': 0.95,

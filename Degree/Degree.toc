@@ -1,9 +1,21 @@
 \babel@toc {romanian}{}\relax 
 \contentsline {chapter}{1. Introducere}{2}{}%
-\contentsline {chapter}{2. Prezentarea problemei abordate}{3}{}%
-\contentsline {chapter}{3. Metoda propusă}{4}{}%
-\contentsline {chapter}{4. Studiu de caz}{5}{}%
-\contentsline {section}{Procesul implementării}{5}{}%
-\contentsline {chapter}{5. Concluzii}{8}{}%
-\contentsline {chapter}{6. Bibliografie}{9}{}%
-\contentsline {chapter}{7. Lista contribuțiilor personale}{10}{}%
+\contentsline {chapter}{2. Prezentarea problemei abordate}{5}{}%
+\contentsline {chapter}{3. Metoda propusă}{8}{}%
+\contentsline {section}{3.1 Comunitatea energetică}{8}{}%
+\contentsline {section}{3.2 Modelul energetic}{10}{}%
+\contentsline {section}{3.3 Indicatori de eficiență și justificare economică}{11}{}%
+\contentsline {section}{3.4 Optimizarea dimensionării centralei}{14}{}%
+\contentsline {section}{3.5 Simularea multi-agent}{15}{}%
+\contentsline {chapter}{4. Studiu de caz}{19}{}%
+\contentsline {section}{4.1 Baza de date IRISE}{19}{}%
+\contentsline {section}{4.2 Biblioteci și unelte folosite}{20}{}%
+\contentsline {section}{4.3 Curățarea datelor}{21}{}%
+\contentsline {section}{4.4 Calculul producției și consumului}{21}{}%
+\contentsline {section}{4.5 Calculul indicatorilor energetici}{24}{}%
+\contentsline {section}{4.6 Optimizarea dimensionării centralei fotovoltaice}{26}{}%
+\contentsline {section}{4.7 Simularea multi-agent}{28}{}%
+\contentsline {subsection}{4.7.1 Configurarea simulării}{28}{}%
+\contentsline {subsection}{4.7.2 Rezultatele simulărilor}{29}{}%
+\contentsline {chapter}{5. Concluzii}{36}{}%
+\contentsline {chapter}{6. Bibliografie}{39}{}%

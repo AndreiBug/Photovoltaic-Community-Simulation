@@ -11,6 +11,10 @@ class RecommendationAgent(Agent): # Agent central care analizeaza consumul comun
         self.estimated_production = 0
     
     def step(self): # Calculeaza consumul si productia totala a comunitatii si trimite recomandari
+        current_time = self.model.houses[0].current_time if self.model.houses else None
+        if not self.model.can_send_recommendations(current_time):
+            return
+
         self.estimated_consumption = 0
         self.estimated_production = 0
         
@@ -18,7 +22,9 @@ class RecommendationAgent(Agent): # Agent central care analizeaza consumul comun
         
         for house in house_agents:
             self.estimated_consumption += house.current_consumption_adjusted
-            self.estimated_production += house.current_production
+
+        # Productia centralei comune reale, nu suma productiilor nominale ale caselor
+        self.estimated_production = self.model.get_total_production(current_time)
         
         # Genereaza recomandare bazata pe datele comunitatii si o trimite caselor
         recommendation = self.generate_recommendation()
@@ -58,7 +64,11 @@ class PresenceRecommendationAgent(Agent): # Agent care analizeaza fiecare casa i
     
     def step(self): # Analizeaza fiecare casa individual si trimite recomandari personalizate
         if not self.initialized: # Calculeaza pragurile la primul step (dupa ce casele sunt create)
-            self.calculate_presence_thresholds()
+            self.calculate_presence_thresholds(percentile=50)
+
+        current_time = self.model.houses[0].current_time if self.model.houses else None
+        if not self.model.can_send_recommendations(current_time):
+            return
         
         for house in self.model.houses:
             recommendation = self.generate_recommendation_for_house(house)
@@ -67,7 +77,8 @@ class PresenceRecommendationAgent(Agent): # Agent care analizeaza fiecare casa i
     # Genereaza recomandare pentru o casa specifica bazata pe consumul, productia si pragul de prezenta al acelei case    
     def generate_recommendation_for_house(self, house):
         current_consumption = house.current_consumption
-        current_production = house.current_production
+        # Cota casei din productia centralei comune, nu productia ei nominala
+        current_production = self.model.get_total_production(house.current_time) / self.model.num_houses
         presence_threshold = self.house_presence_threshold.get(house.unique_id, 0)
         
         # Verifica daca e cineva acasa (model manager: metoda percentile)

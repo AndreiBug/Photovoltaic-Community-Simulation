@@ -12,10 +12,14 @@
 \usepackage[main=romanian,provide=*]{babel}
 \usepackage[a4paper,top=2cm,bottom=2cm,left=3cm,right=2cm]{geometry}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{indentfirst}
+\usepackage{placeins}
+\usepackage{amsmath}
+\usepackage{url}
 
 \setlength{\parindent}{1.25cm}
-\setlength{\parskip}{0.5em}
+\setlength{\parskip}{1em}
 
 \makeatletter
 \def\@makechapterhead#1{%
@@ -36,6 +40,9 @@
 \author{Costache Andrei Darius}
 \date{București, 2026}
 
+\addto\captionsromanian{\renewcommand{\tablename}{Tabelul}}
+\addto\captionsromanian{\renewcommand{\figurename}{Figura}}
+\emergencystretch=3em
 \begin{document}
 
 \begin{titlepage}
@@ -73,134 +80,864 @@
 \chapter*{1. Introducere}
 \addcontentsline{toc}{chapter}{1. Introducere}
 
-Contextul problemei pe care o rezolv
+Cărbunele, petrolul și gazele naturale au alimentat economia mondială timp de decenii, dar au două probleme fundamentale: stocurile sunt limitate și arderea lor eliberează CO\textsubscript{2} în atmosferă, ceea ce contribuie la schimbările climatice. Efectele sunt vizibile: temperaturi mai ridicate, fenomene meteo extreme mai frecvente, creșterea nivelului mărilor. Reducerea dependenței de acești combustibili și trecerea spre surse regenerabile au devenit o direcție tot mai urmată, pe fondul provocărilor climatice \cite{barabino2023energycommunities}.
 
-Paragraf care rezuma lucrarea si evidentiaza contributia personala
+Rețeaua electrică funcționează bine în mod normal. Energia e disponibilă oricând, infrastructura există și prețurile au fost mult timp acceptabile. Indiferent de provocările energetice, prioritatea operatorilor de distribuție rămâne menținerea unui nivel acceptabil de alimentare, oricât ar consuma utilizatorii. Dezavantajele sunt totuși reale: o mare parte din electricitate vine din centrale termice care emit CO\textsubscript{2}, suntem dependenți de importuri de combustibili, iar prețurile cresc când piețele externe fluctuează. Tocmai de aici vine interesul pentru producția locală de energie, care se face chiar la locul de consum și scurtează drumul energiei de la sursă până la priză.
+
+Panourile fotovoltaice produc electricitate direct din lumina soarelui, fără combustibil și fără emisii. Un avantaj față de alte surse regenerabile este că pot fi instalate aproape oriunde: pe o casă, pe un bloc sau într-o curte. Turbinele eoliene au nevoie de vânt constant și de spații deschise, hidroenergia depinde de cursuri de apă, energia geotermală este disponibilă doar în anumite zone. Energia fotovoltaică nu are aceste limitări geografice, ceea ce o face potrivită pentru medii urbane și rezidențiale \cite{duffie2020solar}.
+
+În ultimul deceniu, numărul instalațiilor fotovoltaice a crescut rapid în toată lumea. Costul panourilor a scăzut mult, iar politicile de sprijin din Europa, Asia și America de Nord au accelerat adoptarea. Uniunea Europeană a recunoscut că instalațiile comunitare pot juca un rol important în tranziția spre energie curată și a inclus explicit comunitățile energetice rezidențiale printre direcțiile sprijinite \cite{barabino2023energycommunities, europeansolarstrategy2022}.
+
+Câteva cifre arată cât de repede s-au schimbat lucrurile. Capacitatea fotovoltaică instalată la nivel global a ajuns la aproximativ 1.600 GW la finalul anului 2023, față de 227 GW în 2015, o creștere de peste șapte ori în opt ani \cite{ieapvps2024}. Numai în 2023 s-au adăugat circa 410 GW noi, un record absolut. Costul unui modul solar a scăzut de multe ori în ultimele decenii, de la zeci de dolari per watt în anii '70, când panourile erau folosite mai ales în aplicații spațiale, la sub un dolar per watt în prezent \cite{duffie2020solar}.
+
+Nu în toate locurile panourile produc la fel de mult. Cantitatea de energie solară care ajunge pe un metru pătrat de panou depinde de latitudine, altitudine și de câte zile înorate are zona respectivă \cite{globalsolaratlas2020}. Orientul Mijlociu și Africa de Nord sunt cele mai productive regiuni, cu valori de 2000-2800 kWh/m\textsuperscript{2} pe an. Europa de Sud (Spania, Italia, Grecia) se situează între 1600 și 2000 kWh/m\textsuperscript{2} pe an. România se încadrează în intervalul 1000-1500 kWh/m\textsuperscript{2} pe an, cu valori mai mari în Oltenia și Dobrogea și mai mici în zonele montane. Europa de Nord coboară la 700-900 kWh/m\textsuperscript{2} pe an. Chiar și acolo unde soarele este mai puțin generos, panourile pot fi o investiție bună. Dacă energia din rețea este scumpă, fiecare kilowatt-oră produs acasă înseamnă o economie mai mare, așa că instalația se amortizează chiar și cu o producție mai modestă. Important este ca ea să fie dimensionată după cât soare are zona respectivă.
+
+Pe lângă radiația locală, mai mulți factori influențează cât produce efectiv un sistem instalat. Orientarea panourilor și unghiul de înclinare contează, la fel și pierderile din cabluri și efectul temperaturii ridicate a panourilor în zilele de vară. Un panou funcționează mai eficient la temperaturi moderate decât la 60-70°C, temperaturi care se ating frecvent vara pe suprafețe expuse.
+
+O direcție care a câștigat teren în ultimii ani este cea a comunităților energetice. În loc ca fiecare gospodărie să își monteze separat câteva panouri, mai multe locuințe se grupează în jurul unei centrale comune și folosesc împreună energia produsă. Avantajul nu vine doar din faptul că o centrală comună costă mai puțin decât mai multe instalații mici separate. Mai important este că ea pune la un loc case cu programe diferite, așa că ceea ce nu consumă una la un moment dat poate folosi alta, iar pe ansamblu o parte mai mare din producție este folosită pe loc, în loc să plece în rețea. Tocmai fiindcă ridică întrebări noi față de o instalație individuală, de la felul în care se împarte energia până la felul în care se ține cont de comportamentul membrilor, comunitățile energetice rezidențiale au devenit un subiect activ de cercetare \cite{barabino2023energycommunities, simoiu2022aqtr}.
+
+Lucrarea pornește de la o comunitate de locuințe care împart o centrală fotovoltaică comună. Într-un astfel de aranjament, producția are cea mai mare valoare la prânz, iar consumul are valori maxime dimineața și seara, când oamenii sunt acasă. Din această nepotrivire de orar, o parte din energia produsă se exportă în rețea fără să fie folosită de comunitate, iar dimineața și seara aceeași comunitate importă energie înapoi din rețea. O centrală bine dimensionată reduce risipa, dar nu poate corecta singură decalajul dintre orele de producție și cele de consum. O soluție ar fi controlul automat al aparatelor, însă acesta ignoră faptul că în locuințe trăiesc oameni cu programe și preferințe proprii. De aceea propunem un sistem care nu forțează nimic, ci trimite recomandări voluntare, prin care locatarii își pot muta o parte din consum spre orele cu producție. Ideea de a privi comunitatea ca pe un sistem de agenți și de a ține cont de disponibilitatea membrilor de a-și schimba obiceiurile pornește de la lucrări anterioare pe sisteme multi-agent \cite{simoiu2022aqtr, simoiu2022renewable}, pe care lucrarea de față le duce mai departe. Sistemul ține cont de cine este prezent acasă și de cât de probabil este ca o recomandare să fie urmată, iar tocmai această grijă pentru prezența reală și pentru disponibilitatea locatarilor îl face incluziv.
+
+Prin incluziv înțelegem că sistemul nu impune decizii automate, ci le permite locatarilor să participe activ la gestionarea energiei comunității. Fiecare membru are posibilitatea să răspundă sau nu la recomandările primite, în funcție de programul și preferințele sale. Această participare voluntară este cea care transformă comunitatea energetică dintr-un sistem tehnic într-unul uman: deciziile nu sunt luate în locul oamenilor, ci împreună cu ei.
+
+Lucrarea își propune mai multe obiective măsurabile. Primul este construirea unui model energetic al comunității și calculul indicatorilor SC, SS, NEEG și NPV pornind de la date reale de consum. Al doilea este dimensionarea centralei comune printr-un algoritm de optimizare, astfel încât numărul de panouri să echilibreze autoconsumul și autosuficiența. Al treilea este implementarea unei simulări multi-agent cu doi manageri și două tipuri de casă, care să acopere cele patru combinații de comportament. Al patrulea este măsurarea câștigului adus de recomandări față de un scenariu fără recomandări, pe mai multe dimensiuni de comunitate și de centrală. La final am inclus și validarea modelului de prezență al managerului prin compararea cu prezența reală dedusă din funcționarea aparatelor.
+
+Contribuțiile personale ale acestei lucrări sunt mai multe, dar cea mai importantă este modelul de prezență, împreună cu ideea celor două tipuri de manager și a celor două tipuri de casă. Modelul de prezență estimează când sunt locatarii acasă, astfel încât recomandările să fie trimise și aplicate doar în acele momente. Cele două variante de manager, community și presence, combinate cu cele două variante de casă, probabilistică și presence, acoperă patru moduri diferite de a trata prezența și adoptarea recomandărilor. În rest, am prelucrat și curățat setul de date până la o comunitate de 32 de locuințe utilizabile, am implementat de la zero modelul energetic, indicatorii și dimensionarea centralei cu Differential Evolution și am construit simularea multi-agent în Mesa. Am adăugat și rata de adoptare a recomandărilor, ca să surprind faptul că nu toți locatarii urmează sfaturile. La final am evaluat sistemul pe mai multe configurații și am arătat în ce condiții recomandările aduc un câștig real.
+
+Lucrarea este organizată în șase capitole. În capitolul 2 este definită formal problema, împreună cu actorii implicați și criteriile de evaluare. În capitolul 3 este prezentată metoda propusă, cu modelul energetic, indicatorii, dimensionarea centralei și simularea multi-agent. În capitolul 4 se desfășoară studiul de caz pe datele pe care le folosesc în simulare, de la curățarea acestora până la rezultatele simulărilor. În capitolul 5 sunt trase concluziile, împreună cu limitările metodei și dezvoltările ulterioare.
 
 \clearpage
 
 \chapter*{2. Prezentarea problemei abordate}
 \addcontentsline{toc}{chapter}{2. Prezentarea problemei abordate}
 
-Trebuie sa luam oamenii in calcul atunci cand proiectam sisteme de management energetic (solutii dezvoltate pentru oameni)
+Un sistem de management energetic nu funcționează de la sine. El ajunge într-o casă în care locuiesc oameni, cu programe, obiceiuri și preferințe care nu se schimbă ușor. De aceea, când proiectăm o astfel de soluție, trebuie să pornim de la oameni, nu doar de la cifre și de la aparate. Una care nu ține cont de asta și pornește sau oprește electrocasnicele după cum vrea un algoritm poate arăta bine pe hârtie, dar în practică deranjează locatarii și ajunge oprită. De aici și problema lucrării: cum poate o comunitate de locuințe să folosească mai bine energia unei centrale fotovoltaice comune, fără să le impună locatarilor un program și fără să le ia controlul propriei case.
 
-Cum putem partaja energia ca comunitate si cum putem sa crestem eficienta (sa utilizam cat mai multa energie din panouri) pentru a obtine un beneficiu de autonomie si autoconsum + pentru a reduce dependenta de retea?)
+Din această problemă generală se desprind două întrebări mai concrete. Prima: cum partajăm energia la nivel de comunitate, adică în ce fel se împarte producția unei centrale comune între case cu nevoi diferite, astfel încât ce nu folosește o casă acum să ajungă la alta care are nevoie chiar atunci. A doua: cum creștem eficiența comunității, adică cum facem ca o parte cât mai mare din energia panourilor să fie folosită pe loc, nu trimisă în rețea și cumpărată înapoi mai târziu. Răspunsul la ele aduce câteva beneficii legate între ele. Comunitatea devine mai autonomă, fiindcă se bazează mai mult pe propria producție. Autoconsumul crește, fiindcă mai multă energie a panourilor se folosește acolo unde a fost produsă. Iar dependența de energia cumpărată din afară scade, ceea ce o face mai puțin expusă la prețuri și la fluctuațiile rețelei. Sistemul de recomandări propus caută exact aceste beneficii, dar pe o cale care lasă decizia finală la fiecare locatar.
+
+Problema are intrări, ieșiri și constrângeri clare. Intrările sunt seriile de consum ale fiecărei case, măsurate la intervale regulate pe o perioadă lungă, radiația solară din zona comunității, din care se estimează cât produce centrala, și numărul de panouri al centralei comune. Din ele, sistemul scoate o secvență de recomandări trimise fiecărei case la fiecare pas de timp, de unul dintre cele trei tipuri: REDUCE când cere reducerea consumului, INCREASE când încurajează consumul în orele cu surplus și BALANCED când nu e nevoie de nicio schimbare. Tot ca ieșire ies și indicatorii de performanță, calculați după ce casele aplică sau ignoră recomandările. Apar și două constrângeri. Prima este că recomandările se aplică voluntar. Sistemul nu pornește și nu oprește niciun aparat, ci doar sugerează o direcție, iar fiecare casă rămâne liberă să o urmeze sau să o ignore. A doua ține de când și dacă o recomandare ajunge de fapt aplicată. Pe de o parte, ea are sens doar când e cineva acasă să reacționeze la ea, fiindcă într-o locuință goală nu are cine să o pună în practică. Pe de altă parte, chiar și atunci când locatarul este acasă, rămâne la latitudinea lui dacă o urmează sau nu, dacă dorește și are timp în acel moment. De aceea în lucrare apar atât o probabilitate de aplicare a recomandării, cât și niște modele de prezență, definite mai târziu, care hotărăsc împreună dacă o recomandare chiar ajunge să schimbe ceva în consum.
+
+În problemă intervin mai mulți actori, dar numai unii dintre ei iau decizii. Casa e actorul de bază. Are propriul tipar de consum, dat de obiceiurile celor care locuiesc în ea, și hotărăște singură dacă urmează sau nu o recomandare, în funcție de cine e acasă și de cât de dispuși sunt locatarii să își schimbe programul. Managerul e al doilea care decide. El vede de sus producția centralei și consumul comunității și, pe baza acestei imagini, alege ce recomandare trimite, fie aceeași pentru toate casele, fie una potrivită fiecărei case după prezența estimată. Ceilalți doi nu hotărăsc nimic, dar fără ei problema nici nu ar exista. Centrala fotovoltaică e sursa de energie partajată, cu o producție care ține numai de soare și pe care comunitatea încearcă să o folosească cât mai bine. Rețeaua acoperă diferența dintre producție și consum când cele două nu se potrivesc în timp, adică dă energie prin import când producția nu ajunge și preia surplusul prin export când comunitatea produce mai mult decât consumă. Comunitatea, în schimb, nu e un actor aparte, ci toate casele privite împreună și judecate prin indicatori agregați. Pe scurt, sunt patru actori în joc, casa, managerul, centrala și rețeaua, dar numai casa și managerul iau decizii, iar centrala și rețeaua rămân resursele comune ale sistemului.
+
+Soluția se evaluează prin patru indicatori, iar fiecare măsoară altceva din felul în care comunitatea își folosește energia. Autoconsumul, notat SC, arată cât din energia produsă de centrală e folosită chiar pe loc, în loc să plece în rețea. Când e mare, înseamnă că se pierde puțin, deci că energia panourilor e folosită acolo unde a fost produsă. Autosuficiența, notată SS, arată cât din consumul comunității e acoperit din producția proprie, fără import. Cu cât e mai mare, cu atât comunitatea depinde mai puțin de rețea. Schimbul net cu rețeaua, notat NEEG, adună energia importată și pe cea exportată, fiindcă ambele înseamnă energie nefolosită la timpul potrivit. Cei trei spun împreună cât de bine se sincronizează consumul cu producția, adică exact ce încearcă recomandările să îmbunătățească. Al patrulea, valoarea actualizată netă sau NPV, privește lucrurile economic și arată dacă investiția într-o centrală comună se justifică financiar pe toată durata ei de viață. Toți acești termeni sunt definiți mai riguros pe parcursul lucrării.
+
+Lucrarea se sprijină pe câteva ipoteze de lucru. Acestea trebuie știute încă de la început, fiindcă ele arată în ce condiții sunt valabile rezultatele de mai târziu. Prima privește centrala. Producția e comună și se împarte întregii comunități, nu e suma unor instalații separate, câte una pe acoperișul fiecărei case. Comunitatea investește împreună într-o singură centrală și folosește în comun energia ei, în loc ca fiecare să își pună propriile panouri. O centrală comună adună la un loc consumuri cu programe diferite, iar surplusul pe care o casă nu îl folosește la o oră poate acoperi nevoia alteia în aceeași oră, ceea ce nu s-ar întâmpla dacă fiecare ar avea instalația lui. De aceea indicatorii se calculează pe toată comunitatea, nu pe fiecare casă în parte, fiindcă acolo se vede de fapt câștigul partajării.
+
+A doua ipoteză privește prezența. Sistemul nu știe direct cine e acasă și cine nu. Nu are senzori de prezență, ci o deduce indirect, din consumul casei. Ideea e simplă: o casă care consumă peste un anumit prag e probabil ocupată, iar una care consumă foarte puțin e probabil goală. Estimarea poate greși în ambele sensuri. Uneori crede ocupată o casă goală în care au rămas pornite aparate ce merg singure, un frigider sau un boiler, alteori ratează o prezență în care oamenii sunt acasă, dar consumă puțin, de pildă când dorm sau citesc.
+
+A treia ipoteză privește efectul unei recomandări. Când o casă o urmează, consumul orei respective e înmulțit cu un factor care îl scade sau îl crește, fără ca lucrarea să urmărească aparat cu aparat ce schimbă de fapt locatarul, aceasta fiind o aproximare. În realitate omul nu își scalează uniform tot consumul, ci ia o decizie concretă, amână mașina de spălat cu câteva ore sau își gătește în alt interval al zilei. Modelul nu coboară până acolo, ci prinde doar direcția și mărimea aproximativă a schimbării. Pentru ce urmărim aici, adică efectul agregat asupra indicatorilor, atât ajunge, fiindcă ne interesează tendința generală, nu reconstrucția exactă a fiecărei case.
+
+Datele de consum vin dintr-un set de măsurători reale făcute la finalul anilor '90 în locuințe rezidențiale. De atunci, obiceiurile s-au schimbat, au apărut aparate noi și mai eficiente și alte moduri de a folosi energia în casă, de la încălzire până la electronice. Principiul rămâne însă același, indiferent de epocă. Producția fotovoltaică are tot vârf la prânz, când soarele e sus, consumul casnic are tot vârfuri dimineața și seara, când oamenii sunt acasă, iar nepotrivirea dintre ele e exact problema pe care recomandările o pot atenua. Pe date mai noi cifrele ar ieși altfel, dar comportamentul sistemului ar fi în mare același. Limitele astea nu schimbă structura problemei, doar că vechimea datelor trebuie ținută minte când citim rezultatele numerice.
+
+Soluția se evaluează prin comparație cu un scenariu fără nicio recomandare, numit referință, adică situația în care comunitatea folosește energia exact cum o face în mod natural. Pentru fiecare configurație de comunitate și de centrală măsurăm cât se schimbă SC, SS și NEEG față de referință, iar o soluție e cu atât mai bună cu cât urcă mai mult autoconsumul și autosuficiența și scade mai mult schimbul cu rețeaua. Ne interesează însă și cât de stabil e câștigul, adică dacă efectul recomandărilor se ține și când crește comunitatea sau când se schimbă mărimea centralei. Asta contează, fiindcă o soluție cu adevărat utilă trebuie să meargă pentru comunități de mărimi diferite și pentru centrale dimensionate diferit, nu doar pentru cazul pe care s-a întâmplat să fie testată.
 
 \clearpage
 
 \chapter*{3. Metoda propusă}
 \addcontentsline{toc}{chapter}{3. Metoda propusă}
 
-Descriu modelul multiagent, sistem de recomandari, cum se executa scenariile, performante
+\section*{3.1 Comunitatea energetică}
+\addcontentsline{toc}{section}{3.1 Comunitatea energetică}
 
-Incep cu o schema
+O comunitate energetică, în sensul folosit în această lucrare, este un grup de consumatori rezidențiali care împart producția unei centrale fotovoltaice comune. Conceptul este relativ recent și a căpătat contur în ultimii ani, pe măsură ce costul panourilor a scăzut și a devenit fezabil ca mai multe gospodării să investească împreună într-o instalație. Dintr-o astfel de comunitate pot face parte locatarii unui bloc, ai unui cartier sau mai multe case învecinate care aleg să partajeze o centrală. Ideea este atractivă pentru că energia curată produsă local rămâne în comunitate, factura scade pentru membri, iar dependența de rețea se reduce. Uniunea Europeană sprijină explicit acest model, fiindcă aduce producția de energie mai aproape de consumator și implică cetățenii direct în tranziția verde \cite{barabino2023energycommunities, europeansolarstrategy2022}. Concret, mai multe locuințe sunt grupate într-o rețea locală comună: fiecare casă își acoperă consumul propriu, dar are acces prioritar la energia produsă de centrala colectivă. Înțelegerea modului în care locuitorii consumă energie și a modului în care centrala o produce este punctul de plecare pentru orice strategie de optimizare, deoarece nu poți optimiza ceva ce nu cunoști.
 
-Scriu cat mai general posibil
+Profilul tipic al unui consumator rezidențial reflectă direct rutina zilnică a ocupanților. Dimineața devreme, între orele 6 și 9, consumul crește brusc: ocupanții folosesc iluminatul casei, consumă apă caldă, își gătesc micul dejun și pornesc mai multe aparate de uz casnic în același timp. Seara, între orele 18 și 22, apare al doilea vârf de consum: ocupanții revin acasă, pregătesc cina, utilizează mașina de spălat, televizorul și computerul. La prânz, când cei mai mulți locatari se află la serviciu sau la școală, consumul rezidențial scade la un minim relativ. Aparatele cu consum mare (mașina de spălat, uscătorul, mașina de spălat vase, aspiratorul) sunt utilizate preponderent dimineața sau seara, rar la prânz. Anotimpul adaugă un nivel în plus: vara, aerul condiționat crește consumul la orele de după-amiază, iar iarna încălzirea electrică crește consumul dimineața și seara.
 
+Centrala fotovoltaică are un profil de producție determinat exclusiv de mișcarea soarelui pe cer, complet independent de programul locatarilor. Producția pornește după răsărit, crește progresiv pe măsură ce radiația solară incidentă pe panouri se mărește, atinge maximul, de obicei, în jurul prânzului, când soarele este la înălțimea maximă față de orizont, și scade spre apus, atingând zero după înserare. Intervalul exact în care producția este maximă depinde de fusul orar și de perioada anului, iar în unele zile energia disponibilă se menține ridicată pe o perioadă mai lungă. Această curbă este predictibilă în zilele senine, dar se poate schimba brusc când trec norii. Producția iarna poate fi de două până la trei ori mai mică față de vară, din cauza zilelor mai scurte și a unghiului solar mai mic. Cele două profiluri, cel de consum și cel de producție, se suprapun parțial, și tocmai de aceea există loc pentru optimizare.
+
+Figura~\ref{fig:arhitectura} ilustrează arhitectura sistemului și fluxurile de energie din comunitate.
+\clearpage
+\begin{figure}[h]
+  \centering
+  \fbox{\includegraphics[width=0.85\textwidth]{arhitectura}}
+  \caption{Arhitectura sistemului de management energetic comunitar}
+  \label{fig:arhitectura}
+\end{figure}
+
+Centrala fotovoltaică produce o putere totală $P_{PV}$, comună tuturor locuințelor, distribuită fiecărei case care are acces prioritar la ea pentru a-și acoperi consumul propriu. Atâta timp cât producția centralei acoperă consumul total al comunității, casele se alimentează din energia solară comună. Când consumul depășește producția, diferența, notată $P_{import}$, este importată din rețeaua națională, iar distribuitorul completează deficitul astfel încât fiecare casă să primească energia de care are nevoie. Invers, dacă producția depășește consumul, surplusul este injectat înapoi în rețea. Echilibrul energetic la fiecare moment de timp este așadar simplu: energia produsă de centrală plus cea importată din rețea acoperă consumul total al comunității și eventualul surplus exportat.
+
+Astfel, bilanțul energetic al comunității la fiecare pas de timp $k$ se scrie:
+
+\begin{equation}
+  P_{Load,k} + P_{export,k} = P_{PV,k} + P_{import,k}
+  \label{eq:bilant}
+\end{equation}
+
+unde $P_{Load,k}$ este consumul total al comunității, $P_{PV,k}$ este producția centralei, $P_{import,k}$ este energia adusă din rețea, iar $P_{export,k}$ este surplusul injectat înapoi în rețea.
+
+
+Consumul reprezintă energia electrică folosită de toate locuințele comunității într-un interval de timp dat. Spre deosebire de producție, consumul este distribuit: fiecare casă are propriul profil de utilizare, determinat de numărul de ocupanți, tipul aparatelor și programul zilnic al locatarilor. Consumul total al comunității este suma consumurilor individuale ale celor $N$ locuințe:
+
+\begin{equation}
+  P_{Load,k} = \sum_{i=1}^{N} P_{Load,k,i}
+  \label{eq:consum}
+\end{equation}
+
+Consumul individual al fiecărei case se extrage din datele de măsurătoare ale aparatelor casnice, înregistrate la fiecare $\Delta t$ minute. Această convenție este suficientă pentru a surprinde variațiile rapide de consum, cum ar fi pornirea unui cuptor sau a unui boiler.
+
+De obicei, locatarii consumă energia după programul lor obișnuit, fără să țină cont de ce produce centrala, iar rezultatul este destul de previzibil. Dimineața și seara, când consumul e mare, centrala nu produce nimic sau produce foarte puțin, deci energia vine din rețea. La prânz, când centrala e la maxim, consumul e la minim. Problema nu e că centrala e prea mică sau prea mare, ci că producția și consumul nu sunt sincronizate.
+
+Soluția nu constă în controlul forțat al aparatelor casnice. Există abordări care propun sisteme complete de automatizare, în care un sistem de control central pornește și oprește aparatele fiecărei case pentru a optimiza consumul. O astfel de soluție tratează însă omul ca pe o simplă perturbație a sistemului și îi ignoră preferințele și rutina în favoarea algoritmului, ceea ce ridică probleme de acceptabilitate și de confidențialitate \cite{simoiu2022renewable}. La fel, a forța locatarii să își reducă consumul ar însemna un regim de austeritate greu de acceptat. În această lucrare pornim de la premisa opusă: fiecare locatar trebuie să poată consuma în continuare conform preferințelor sale, fără să i se impună nimic.
+
+O soluție potențială este informarea locatarilor. Este posibil ca, dacă un locatar știe că la ora 13 centrala produce mai mult decât consumă comunitatea, să aleagă să pornească mașina de spălat la acea oră. O astfel de decizie voluntară ar putea reduce importul de seară și ar crește autoconsumul de la prânz, adică partea din producția centralei folosită pe loc, fără a fi exportată în rețea. Luând în considerare întreaga comunitate, chiar și un procent parțial de locatari care adoptă recomandările ar putea schimba semnificativ echilibrul energetic.
+
+\section*{3.2 Modelul energetic}
+\addcontentsline{toc}{section}{3.2 Modelul energetic}
+
+Modelul energetic transformă fluxurile din arhitectura prezentată în Figura~\ref{fig:arhitectura} în ecuații și date ușor de analizat. Înainte de a propune o soluție, trebuie să știm, pentru fiecare moment de timp, două lucruri: cât produce centrala și cât consumă comunitatea. Fără aceste două valori, nu putem spune dacă producția și consumul sunt în echilibru.
+
+Producția reprezintă energia electrică generată de panourile fotovoltaice ale centralei într-un interval de timp dat. Ea depinde direct de câtă radiație solară cade pe panouri în acel moment. Noaptea producția este zero, la prânz pe timp senin atinge maximul, iar în zilele înnorate variază. Producția nu poate fi controlată: centrala produce cât îi permite soarele, nu cât are nevoie comunitatea. Această caracteristică este tocmai sursa dezechilibrului pe care sistemul de recomandări încearcă să îl reducă.
+
+Dacă la un moment dat centrala produce mai mult decât consumă comunitatea, surplusul este injectat în rețea. Pentru comunitate, acel surplus este energie care nu reduce factura, iar pentru operatorul de rețea injecțiile mari și variabile sunt o problemă, fiindcă rețeaua trebuie să preia putere în sens invers, ceea ce solicită echipamentele și complică reglajul tensiunii. Când centrala produce prea puțin, diferența este importată din rețea, iar comunitatea rămâne dependentă de furnizor. Niciuna dintre situații nu este cea mai favorabilă, așa că scopul lucrării este să apropie producția de consum în timp, ca schimbul cu rețeaua să fie cât mai mic în ambele sensuri.
+
+Estimarea producției fotovoltaice, fie a unei singure case, fie a centralei comune a comunității, se face la fiecare pas de timp cu relația din \cite{simoiu2021jcp}. Modelul este același în ambele situații, diferă doar numărul de panouri $n$:
+
+\begin{equation}
+  P_{PV_{Pred}} = P_M \cdot n \cdot f \cdot \frac{G}{G_{T_{STC}}} \quad [\text{kW}]
+  \label{eq:productie}
+\end{equation}
+
+unde $P_M$ este puterea nominală a unui panou (W), $n$ este numărul de panouri, $f$ este factorul de performanță al sistemului, $G$ este radiația solară incidentă (W/m\textsuperscript{2}), iar $G_{T_{STC}}$ este radiația solară de referință în condiții standard de testare \cite{duffie2020solar}. Factorul $f$ cuantifică pierderile reale față de valorile nominale ale panourilor, incluzând pierderile din invertoare, cabluri și efectele termice.
+
+\section*{3.3 Indicatori de eficiență și justificare economică}
+\addcontentsline{toc}{section}{3.3 Indicatori de eficiență și justificare economică}
+
+Nu este suficient să știm cât produce centrala. Trebuie să măsurăm și cât de bine este folosită energia produsă, pentru că aici se vede dacă instalația e dimensionată corect. O centrală supradimensionată produce, la prânz, mai mult decât poate consuma comunitatea, iar surplusul ajunge în rețea și încarcă inutil distribuitorul. O centrală subdimensionată produce prea puțin, astfel încât economiile obținute nu justifică investiția. Pentru a evalua aceste situații se folosesc câțiva indicatori standard pe care îi calculăm atât la dimensionarea centralei, cât și după simulări, pentru a compara scenariile între ele.
+
+Autoconsumul (SC, Self-Consumption) măsoară procentul din producția de la panouri care este utilizat în comunitate fără a fi pierdut:
+
+\begin{equation}
+  SC = \frac{\displaystyle\sum_{k=1}^{T} \min\!\left(P_{Prod,k},\, P_{Load,k}\right) \Delta t}{\displaystyle\sum_{k=1}^{T} P_{Prod,k}\, \Delta t}
+  \label{eq:sc}
+\end{equation}
+
+unde $P_{Prod,k}$ este puterea medie produsă de panouri în pasul $k$, $P_{Load,k}$ este consumul total al comunității în același pas, $\Delta t$ este durata intervalului de eșantionare, iar $T$ este numărul total de pași.
+
+SC ia valori între 0 și 1. Valoarea 0 înseamnă că toată producția este pierdută și nu este folosită de comunitate: consumul e concentrat complet în afara orelor de producție. Valoarea 1 înseamnă că toată energia produsă a fost consumată intern.
+
+Un SC ridicat, privit izolat, nu este de ajuns pentru o analiză completă. Poate fi maximizat artificial prin instalarea panourilor mai puține: dacă produci puțin, tot ce produci e consumat local. Cu alte cuvinte, dacă am urmări doar SC, soluția optimă ar fi întotdeauna să instalăm un singur panou. De aceea SC se interpretează întotdeauna împreună cu SS.
+
+Pentru sistemul de recomandări, SC este indicatorul cel mai direct al obiectivului: cu cât locatarii își mută consumul spre orele de producție, cu atât mai puțină energie se pierde în rețea și SC crește. El măsoară tocmai efectul implicării membrilor comunității.
+
+Autosuficiența (SS, Self-Sufficiency) măsoară procentul din consumul total al comunității care este acoperit de producția panourilor fotovoltaice:
+
+\begin{equation}
+  SS = \frac{\displaystyle\sum_{k=1}^{T} \min\!\left(P_{Prod,k},\, P_{Load,k}\right) \Delta t}{\displaystyle\sum_{k=1}^{T} P_{Load,k}\, \Delta t}
+  \label{eq:ss}
+\end{equation}
+
+SS ia valori între 0 și 1. Valoarea 0 înseamnă că tot consumul a venit din rețeaua externă, fără nicio contribuție din producția panourilor, situație care apare noaptea sau când producția și consumul nu se suprapun deloc. Valoarea 1 înseamnă că tot consumul a fost acoperit din producția panourilor, fără niciun import din rețea.
+
+SS măsoară autonomia comunității față de rețea. Pentru problema noastră, un SS mai mare arată că recomandările au reușit să acopere o parte mai mare din consum din producția proprie, adică locatarii au folosit mai mult din energia comună și au importat mai puțin de la furnizor.
+
+Relația dintre SC și SS este de compromis: mai multe panouri cresc SS, dar tind să scadă SC. Găsirea unui echilibru între cei doi este una dintre problemele principale ale dimensionării adecvate din punct de vedere energetic \cite{simoiu2021jcp}.
+
+Schimbul net de energie cu rețeaua (NEEG, Net Energy Exchanged with the Grid) măsoară cantitatea totală de energie schimbată cu rețeaua, indiferent de direcție, adică atât energia injectată în rețea (export), cât și cea consumată din rețea (import).
+
+\begin{equation}
+  NEEG = \sum_{k=1}^{T} \left|P_{PV,k} - P_{Load,k}\right| \Delta t \quad [\text{kWh}]
+  \label{eq:neeg}
+\end{equation}
+
+La fiecare pas de timp, formula calculează diferența în valoare absolută dintre producție și consum și o adună pe întreaga perioadă de simulare. Dacă producția e mai mare decât consumul, diferența se pierde în rețea. Dacă consumul e mai mare, diferența reprezintă energia importată din rețea. Ambele situații contribuie la NEEG.
+
+Un NEEG de 0 ar însemna că producția și consumul sunt perfect sincronizate la fiecare moment de timp, ceea ce în practică nu se întâmplă. Un NEEG ridicat înseamnă că există un decalaj mare între ce produce centrala și ce consumă comunitatea. De exemplu, o comunitate care pierde multă energie la prânz și importă mult seara are un NEEG ridicat, chiar dacă per total energia produsă e egală cu cea consumată.
+
+Spre deosebire de SC și SS, care sunt normalizați între 0 și 1, NEEG se exprimă în kWh. Cu cât comunitatea depinde mai mult de rețea, prin import sau export, cu atât NEEG este mai mare.
+
+O proprietate utilă a NEEG este că minimizarea sa este echivalentă cu maximizarea simultană a SC și SS, fapt demonstrat în \cite{simoiu2021jcp}. Acest lucru nu înseamnă însă că cei trei indicatori sunt interschimbabili ca funcție obiectiv. Maximizarea doar a SC duce mereu la o instalație minimă, de un singur panou, fiindcă tot ce se produce se consumă local, iar maximizarea doar a SS duce la un număr foarte mare de panouri, fiindcă mai multă producție acoperă mereu mai mult din consum. Doar minimizarea NEEG, echivalentă cu maximizarea simultană a SC și SS, oferă un compromis echilibrat.
+
+Indicatorii SC, SS și NEEG se pot calcula atât pentru o singură casă, cât și pentru întreaga comunitate. În această lucrare i-am calculat în ambele moduri, însă ne concentrăm mai mult pe rezultatele la nivel de comunitate, fiindcă panourile sunt partajate de toți, iar acolo se vede efectul recomandărilor. Valorile pentru o singură casă servesc mai ales la ilustrarea comportamentului indicatorilor.
+
+Al patrulea indicator este NPV (Net Present Value), sau valoarea actualizată netă, și răspunde la o întrebare simplă: merită investiția în panouri din punct de vedere financiar?
+
+Ideea de bază este că instalarea panourilor costă bani la început, dar aduce economii în fiecare an, pentru că o parte din energia consumată vine acum de la panouri și nu mai trebuie cumpărată. Dacă economiile cumulate depășesc costul inițial și cheltuielile de întreținere, investiția e rentabilă.
+
+Costul inițial al sistemului se calculează astfel \cite{simoiu2021jcp}:
+
+\begin{equation}
+  CapEx = C_{wp} \cdot P_M \cdot n
+  \label{eq:capex}
+\end{equation}
+
+unde $C_{wp}$ este prețul unui modul exprimat în euro per watt de putere instalată, $P_M$ este puterea nominală a unui panou în wați și $n$ este numărul de panouri.
+
+În fiecare an, există și un cost de operare și mentenanță, estimat ca o fracțiune $m$ din investiția inițială \cite{simoiu2021jcp}:
+
+\begin{equation}
+  OpEx_t = m \cdot CapEx
+  \label{eq:opex}
+\end{equation}
+
+unde $m$ este rata anuală de operare și mentenanță, exprimată ca fracțiune din CapEx.
+
+Câștigul anual provine din diferența dintre factura pe care comunitatea ar fi plătit-o fără panouri și factura efectivă cu producție proprie:
+
+\begin{equation}
+  G_t = B_{ref} - B_{new}
+  \label{eq:gain}
+\end{equation}
+
+Cu cât autoconsumul e mai mare, cu atât $B_{new}$ e mai mic și câștigul $G_t$ e mai mare. NPV adună toate câștigurile nete anuale pe durata de viață a instalației și le compară cu costul inițial:
+
+\begin{equation}
+  NPV = -CapEx + \sum_{t=1}^{Y} \left(G_t - OpEx_t\right) \frac{1}{(1 + r)^t}
+  \label{eq:npv}
+\end{equation}
+
+Factorul $\frac{1}{(1+r)^t}$ actualizează câștigurile viitoare la valoarea lor din prezent, ținând cont de inflație (ex: un euro câștigat peste zece ani valorează mai puțin decât un euro câștigat azi). $Y$ este numărul de ani analizați, iar $r$ este rata de actualizare. Un NPV pozitiv înseamnă că investiția se amortizează în perioada aleasă. Un NPV negativ nu înseamnă neapărat că panourile sunt o idee proastă, ci că în condițiile date (tarif energetic, număr de panouri, durată analizată) costul nu se recuperează complet.
+
+Pentru o comunitate, NPV are un rol aparte. O singură casă care își cumpără câteva panouri obține un autoconsum limitat, fiindcă surplusul de la prânz, când locatarul lipsește, se pierde. Dacă mai multe case investesc împreună într-o centrală comună, consumul agregat este mai mare și mai bine distribuit peste zi, deci o parte mai mare din producție este folosită pe loc și factura scade pentru toți. NPV calculat la nivelul comunității arată dacă această investiție comună se justifică, iar sistemul de recomandări o face mai rentabilă, pentru că mută consumul spre orele de producție și mărește economia anuală $G_t$.
+
+\section*{3.4 Optimizarea dimensionării centralei}
+\addcontentsline{toc}{section}{3.4 Optimizarea dimensionării centralei}
+
+Dimensionarea centralei este primul pas al soluției propuse: mai întâi comunitatea investește și își cumpără o centrală optim dimensionată pentru nevoile ei, iar abia apoi locatarii reacționează la recomandări pentru a-și sincroniza consumul cu producția acelei centrale. Scopul optimizării este să găsim numărul de panouri $n$ care maximizează SC și SS. Adăugarea mai multor panouri nu înseamnă automat un rezultat mai bun: prea puține panouri înseamnă că comunitatea tot depinde mult de rețea, dar prea multe panouri înseamnă că o mare parte din producție se pierde la orele de vârf, fără să fie consumată local. Scopul optimizării este să găsim punctul de echilibru dintre cele două.
+
+Nu există o formulă directă pentru asta, deoarece SC și SS depind neliniar de $n$ și se calculează prin simularea consumului și a producției pe datele istorice. Funcția obiectiv minimizată este:
+
+\begin{equation}
+  f(n) = -(w_{SC} \cdot SC(n) + w_{SS} \cdot SS(n))
+  \label{eq:obj}
+\end{equation}
+
+Semnul negativ apare deoarece algoritmul minimizează prin convenție, iar noi vrem să maximizăm. Ponderile $w_{SC}$ și $w_{SS}$ permit ajustarea priorităților: ponderi egale produc un compromis echilibrat, iar setarea uneia la 1 și a celeilalte la 0 optimizează exclusiv indicatorul ales. De exemplu, dacă prioritatea este autonomia comunității, $w_{SS}$ poate fi setat mai mare.
+
+Conform proprietății demonstrate în \cite{simoiu2021jcp}, maximizarea acestei funcții cu ponderi egale este echivalentă cu minimizarea NEEG (Ecuația~\ref{eq:neeg}).
+
+\begin{equation}
+  f(n) = NEEG(n)
+  \label{eq:obj_neeg}
+\end{equation}
+
+De data aceasta funcția se minimizează direct, fără semnul negativ folosit la SC și SS, fiindcă un NEEG mai mic înseamnă deja un rezultat mai bun.
+
+Algoritmul ales pentru optimizare este Differential Evolution (DE) \cite{stornprice1997}, un algoritm evoluționar care caută soluția bună prin explorarea spațiului de posibilități, fără să aibă nevoie de derivate ale funcției obiectiv. Asta îl face potrivit pentru situații ca a noastră, unde valoarea funcției obiectiv se obține dintr-o simulare, nu dintr-o formulă algebrică simplă. E și robust față de minime locale, un dezavantaj frecvent al metodelor clasice de optimizare.
+
+Funcționarea e simplă: DE pornește cu o populație de valori candidat pentru $n$ (de exemplu, 10, 15, 20, 25 de panouri). La fiecare iterație, pentru fiecare candidat se generează o variantă nouă prin combinarea a altor trei candidați din populație. Dacă varianta nouă dă un scor mai bun, o înlocuiește pe cea veche. Procesul se repetă până când valorile converg sau se atinge un număr maxim de iterații. La final, algoritmul returnează numărul optim de panouri din intervalul $[n_{min}, n_{max}]$ definit de utilizator.
+
+\section*{3.5 Simularea multi-agent}
+\addcontentsline{toc}{section}{3.5 Simularea multi-agent}
+
+Optimizarea numărului de panouri rezolvă parțial problema dimensionării, dar nu și problema sincronizării. Chiar și cu un număr optim de panouri, locatarii care consumă după programul lor obișnuit vor pierde surplusul de energie la prânz și vor importa energie seara. Sistemul multi-agent transmite informații despre starea curentă a producției și lasă locatarii să decidă singuri dacă vor să-și ajusteze consumul. Nu se impune nimic, iar dacă un locatar ignoră recomandarea, nu se întâmplă nimic. Abordarea prin control forțat al aparatelor ridică probleme de acceptabilitate și confidențialitate documentate în \cite{simoiu2022renewable}, și de aceea a fost evitată.
+
+Merită observat și un risc al simplei instalări de panouri, fără nimic care să orienteze consumul. Dacă locatarii știu că o centrală comună le acoperă o parte din factură, pot fi tentați să cumpere tot mai multe aparate și să consume mai mult, fără să le pese când anume produce centrala. Acest efect de bumerang ar șterge o parte din câștig, fiindcă energia în plus ar fi consumată tot seara și dimineața, nu la prânz, când există surplus. Un sistem de recomandări încearcă tocmai să prevină asta și să îi ajute pe locatari să consume în acord cu producția, nu doar mai mult.
+
+Sistemul este modelat ca un sistem multi-agent cu două tipuri de agenți, fiecare reprezentând un actor real din comunitate.
+
+Agentul de tip casă reprezintă o locuință din comunitate. Aici trebuie făcută o distincție între cele două perspective ale lucrării. În realitate, un locatar nu își urmărește consumul oră de oră, ci doar primește o recomandare și alege liber dacă o urmează sau nu. În simulare însă, agentul casă citește consumul orei din datele măsurate și decide pe baza lui, fiindcă acesta este modul în care putem reproduce efectul unei recomandări fără un om real în buclă. Așa, agentul fie aplică recomandarea și își scade sau crește consumul, fie o ignoră și consumă ca de obicei. El modelează locatarul real, cu rutina și libertatea lui de decizie, fiindcă de comportamentul fiecărei case depinde cât de mult se apropie consumul comunității de producție.
+
+Agentul manager reprezintă coordonatorul comunității. El are o vedere de ansamblu asupra producției centralei și asupra consumului agregat al caselor și, pe baza acestor date, decide ce recomandare să trimită: să reducă, să crească sau să mențină consumul. Managerul nu controlează nimic direct, singura lui acțiune fiind să informeze casele. Rolul lui în problema noastră este să identifice când ar trebui ca locatarii să reducă sau să crească consumul și să le trimită recomandări, pe care ei le pot urma voluntar.
+
+Fiecare dintre cei doi agenți există în câte două variante care modelează niveluri diferite de personalizare a recomandărilor și de comportament al locatarilor. Am ales această structură, cu două tipuri de manager și două tipuri de casă, pentru a putea separa în analiză efectul personalizării recomandărilor, dat de manager, de efectul comportamentului locatarilor, dat de casă.
+
+Modelarea comunității ca sistem multi-agent urmează abordarea din \cite{simoiu2022aqtr}. Cadrul de simulare folosit este Mesa, o bibliotecă Python pentru sisteme multi-agent cu timp discret. La fiecare pas de timp $k$, fiecare agent casă citește consumul său curent $P_{Load,k,i}$ și producția comunitară $P_{Prod,k}$. Agentul manager calculează o recomandare pe baza acestor date și o distribuie caselor. Casele actualizează consumul ajustat conform tipului lor de răspuns, ceea ce reprezintă, în simulare, efectul unei recomandări.
+
+Ordinea operațiilor la fiecare pas contează. Întâi fiecare casă își citește consumul și producția pentru ora curentă. Apoi managerul, care vede starea întregii comunități, calculează recomandarea pe baza acestor valori. La final, fiecare casă decide dacă aplică recomandarea și își ajustează consumul. Managerul acționează după ce casele și-au citit datele, deoarece recomandarea lui depinde de consumul curent al tuturor. Dacă ar acționa înainte, nu ar avea pe ce să se bazeze. Un pas de simulare reprezintă o oră, fiindcă datele de consum și de radiație sunt agregate orar, iar o oră este un interval suficient pentru a surprinde vârfurile de dimineață și de seară, fără a încărca inutil simularea.
+
+Acești pași pot fi urmăriți și într-o diagramă secvențială, care arată ordinea în care casele, managerul și centrala schimbă informații la un pas de timp (Figura~\ref{fig:secventa}).
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.85\textwidth]{diagrama_secventiala}}
+  \caption{Diagrama secvențială dintre casă, manager și centrală la un pas de simulare}
+  \label{fig:secventa}
+\end{figure}
+
+Tot aici trebuie clarificat ce înseamnă $P_{Load,k,i}$ în cele două perspective. În simulare, folosim consumul măsurat din setul de date drept valoarea $P_{Load,k,i}$, fiindcă el este o estimare foarte bună a ceea ce ar consuma o casă reală la acea oră, iar pe baza lui managerul poate calcula recomandări realiste. Într-o implementare reală însă, sistemul nu cunoaște dinainte cât va consuma casa în ora care urmează, deci ar trebui să estimeze $P_{Load,k,i}$ printr-o metodă oarecare, de pildă din istoricul de consum al casei sau dintr-un model de predicție bazat pe învățare automată \cite{murphy2012ml}. Lucrarea de față nu intră în acest pas de estimare, ci folosește direct datele măsurate, tocmai pentru că ele joacă rolul unei estimări de foarte bună calitate.
+
+Agentul manager există în două variante, fiecare corespunzând unui nivel diferit de personalizare a recomandărilor.
+
+Varianta de tip community generează o singură recomandare pentru întreaga comunitate, bazată pe consumul agregat al tuturor caselor. La fiecare pas de timp, managerul compară consumul total cu producția curentă a centralei și decide ce recomandare să trimită.
+
+Logica se bazează pe doi parametri configurabili: un prag superior și un prag inferior. Dacă consumul depășește producția cu mai mult decât pragul superior (de exemplu, consumul e cu 30\% mai mare decât producția), managerul emite REDUCE. Dacă producția depășește consumul cu mai mult decât pragul inferior, emite INCREASE, semnalând că există energie disponibilă care altfel s-ar pierde. Dacă raportul se situează între cele două praguri, recomandarea este BALANCED. Praguri mai strânse produc recomandări mai dese, praguri mai largi intervin mai rar. Astfel, recomandarea la pasul $k$ este:
+
+\begin{equation}
+  rec(k) = \begin{cases}
+    \text{REDUCE}   & \text{dacă } P_{Load,k} > \alpha \cdot P_{Prod,k} \\
+    \text{INCREASE} & \text{dacă } P_{Load,k} < \beta \cdot P_{Prod,k}  \\
+    \text{BALANCED} & \text{altfel}
+  \end{cases}
+  \label{eq:rec}
+\end{equation}
+
+unde $\alpha$ este pragul superior și $\beta$ este pragul inferior, ambele configurabile. De exemplu, cu $\alpha = 1.3$ și $\beta = 0.7$, REDUCE se emite când consumul e cu 30\% mai mare decât producția, iar INCREASE se emite când producția e cu 30\% mai mare decât consumul.
+
+Varianta de tip presence trimite recomandări personalizate per casă, dar numai dacă estimează că cineva este acasă. Motivul e simplu: dacă nimeni nu e acasă, o recomandare nu poate fi urmată.
+
+Estimarea prezenței se face pe baza istoricului de consum al fiecărei case. Managerul calculează un prag de prezență definit ca un percentile al distribuției zilnice a consumului \cite{murphy2012ml}. De exemplu, la percentile 50, pragul e nivelul de consum sub care se situează 50\% din măsurătorile zilei. Dacă consumul curent al casei depășește acest prag, managerul consideră că cineva e acasă și trimite o recomandare individuală. Dacă nu, nu trimite nimic. Un percentile mai mic înseamnă un prag mai jos și mai multe momente clasificate ca prezență, iar unul mai mare este mai strict.
+
+Agentul de tip casă există și el în două variante, fiecare modelând un tip diferit de comportament al locatarilor.
+
+Varianta de tip probabilistic aplică recomandarea primită cu o probabilitate configurabilă, cuprinsă între 0 și 1 exclusiv. Această probabilitate modelează comportamentul realist al locatarilor: nu toți cei care primesc o recomandare o și urmează, iar gradul de conformare variază de la comunitate la comunitate și de la persoană la persoană. O probabilitate de adoptare de 100\% reprezintă scenariul ideal în care toți locatarii urmează întotdeauna recomandarea primită. O probabilitate de 50\% înseamnă că, statistic, jumătate dintre recomandări sunt urmate și jumătate sunt ignorate. Valoarea acestui parametru are un impact direct asupra performanței sistemului: cu cât mai mulți locatari adoptă recomandările, cu atât mai mult se îmbunătățesc SC, SS și NEEG.
+
+Când o casă aplică o recomandare, consumul se modifică printr-un factor multiplicativ configurabil. La REDUCE, consumul scade față de valoarea originală, simulând un locatar care amână pornirea mașinii de spălat sau a altor aparate mari. La INCREASE, consumul crește, simulând pornirea anticipată a unor aparate. La BALANCED, consumul rămâne nemodificat. Astfel, consumul ajustat al casei $i$ la pasul $k$, pornind de la consumul măsurat $P_{Load,k,i}$ din Ecuația~\ref{eq:consum}, este:
+
+\begin{equation}
+  P_{Load,k,i}^{adj} = \begin{cases}
+    \gamma \cdot P_{Load,k,i} & \text{dacă recomandarea este REDUCE}   \\
+    \delta \cdot P_{Load,k,i} & \text{dacă recomandarea este INCREASE} \\
+    P_{Load,k,i}              & \text{dacă recomandarea este BALANCED}
+  \end{cases}
+  \label{eq:ajustare}
+\end{equation}
+
+unde $\gamma < 1$ este factorul de reducere, iar $\delta > 1$ este factorul de creștere, ambii configurabili. La nivelul arhitecturii din Figura~\ref{fig:arhitectura}, aceste ajustări individuale modifică consumul agregat al comunității, deci și cât se importă sau se exportă din rețea la ora respectivă.
+
+Varianta de tip presence aplică recomandările numai dacă detectează prezența locatarilor în locuință. Într-un sistem real, prezența ar putea fi măsurată direct, prin senzori de ocupare sau alte surse de date. Setul de date folosit nu conține însă astfel de informații, așa că propunem un model sintetic de prezență, care estimează ocuparea locuinței pe baza comportamentului aparatelor casnice. Pentru fiecare aparat monitorizat se calculează minimul de consum din ziua respectivă. Dacă consumul curent al aparatului depășește de cel puțin două ori acel minim, aparatul este considerat activ. Logica este că un aparat în standby nu semnalează prezență, pe când un consum semnificativ față de minimul zilnic indică utilizare reală. De asemenea, un prag mai mare reduce falsele pozitive, dar poate rata momente de prezență reală.
+
+Performanța sistemului se evaluează la finalul fiecărei simulări, după ce toate orele au fost parcurse. Se calculează SC, SS și NEEG pe consumul ajustat al comunității și se compară cu aceleași mărimi pe consumul nemodificat. Comparația cu referința este cea care spune dacă recomandările au avut un efect real. Frecvența acestei evaluări depinde de dimensiunea și de maturitatea comunității. Într-o comunitate mare și deja stabilă, indicatorii pot fi calculați o dată sau de două ori pe an, iar rezultatele pot fi distribuite locatarilor, astfel încât fiecare să poată decide liber dacă rămâne și continuă să folosească energia panourilor sau preferă să se retragă. Într-o comunitate mică sau aflată în dezvoltare, este de preferat ca evaluarea să fie repetată mai des în cursul anului, fiindcă rezultatele se stabilizează treptat, pe măsură ce se acumulează mai multe date și comportamentul locatarilor devine mai previzibil. Abia după această perioadă de ajustare valorile devin suficient de stabile pentru a sta la baza unor decizii pe termen lung.
 
 \clearpage
 
 \chapter*{4. Studiu de caz}
 \addcontentsline{toc}{chapter}{4. Studiu de caz}
 
-\section*{Procesul implementării}
-\addcontentsline{toc}{section}{Procesul implementării}
+Studiul de caz urmărește pas cu pas etapele sistemului, de la datele brute până la rezultatele finale. Pentru o vedere de ansamblu, fluxul complet de execuție este ilustrat în Figura~\ref{fig:flowchart}.
 
-Pentru rezolvarea problemei propuse se utilizează limbajul Python întrucât oferă o gamă variată de librării pentru manipularea datelor și analiza lor. Printre librăriile utilizate se numără: pandas pentru manipularea și analiza datelor din tabele, numpy pentru calcule, plotly pentru generarea graficelor, scipy pentru optimizare matematică prin metoda de optimizare differential evolution, mesa pentru simularea comunității bazate pe agenți.
+\begin{figure}[h]
+  \centering
+  \fbox{\includegraphics[width=0.85\textwidth]{Flow_chart}}
+  \caption{Fluxul de execuție al sistemului}
+  \label{fig:flowchart}
+\end{figure}
 
-Baza de date folosită în proiect se bazează pe date măsurate ale unor case din Franța într-o perioadă de aproximativ un an. Printre tabelele din baza de date se numără: aparatele fiecărei case, tipul aparatelor, consumul fiecărui aparat măsurat la un interval de 10 minute, casele pentru care s-au făcut măsurătorile, stații meteo din Franța din apropierea caselor și diferite date despre vreme precum temperatura, viteza și direcția vântului, umiditate și radiația solară. Pentru utilizarea rapidă a valorilor din baza de date au fost extrase tabelele sub formă de csv-uri, mai apoi creând dicționare specifice valorilor care se iau în considerare pentru a vavea o accesare cât mai eficientă.
+Fluxul pornește de la date brute și trece prin trei faze mari: procesarea datelor, optimizarea centralei și simularea multi-agent. În faza de procesare, datele de consum sunt încărcate, curățate și agregate la nivelul comunității. Pe baza lor se estimează producția fotovoltaică și se calculează indicatorii SC, SS, NEEG și NPV. Rezultatele acestei faze alimentează optimizarea. În faza de optimizare, algoritmul Differential Evolution caută numărul optim de panouri $n$, evaluând funcția obiectiv prin simulări repetate ale consumului și producției. În faza de simulare, cei patru agenți manager și casă sunt inițializați cu un număr favorabil de panouri și rulați pe cele patru scenarii. La final se generează graficele și comparațiile dintre scenarii și referință. Aceste faze corespund secțiunilor care urmează în acest capitol.
 
-După o analiză detaliată a datelor s-au întâmpinat câteva obstacole și au trebuit să fie create funcții pentru curățarea, corectarea sau filtrarea acestora. Dintre aceste funcții amintim: ștergerea caselor cu mai puțin de un an de date pentru o analiză de minim un an, normalizarea spike-urilor de consum care apar la măsurarea consumului la 10 minute prin compararea fiecărei valori cu suma dintre valoarea următoare și cea precedentă înmulțită cu un threshold, în cazul actual fiind 3, ștergerea caselor cu minim 30 de zile consecutive fără date de consum, ștergerea caselor fără radiație solară înregistrată, corectarea stațiilor meteo unde erau înregistrate valori sub 0, aceste înregistrări fiind imposibile. La final pentru uniformizare au fost eliminate toate casele care se încadrau în aceste criterii și au fost eliminate și toate datele asociate acestor case din celelalte csv-uri.
+\section*{4.1 Baza de date IRISE}
+\addcontentsline{toc}{section}{4.1 Baza de date IRISE}
 
-Următoarea etapă constă în calculul consumului de energie și a producției pentru fiecare casă în parte pe baza câtorva parametri. Pentru consumul casei se preiau valorile din csv care sunt înregistrate în wați o dată la 10 minute. Pentru calculul producției este necesară utilizarea mai multor parametri: Pm este puterea nominală a unui panou în wați, n este numărul de panouri, f este factorul de randament, G(t) este radiația solară la momentul de timp t, GTSTC este iradierea solară de referință la condiții standard de test pentru panouri fotovoltaice. La final, ambele valori pentru consum și producție sunt transformate în kWh.
+Datele folosite în această lucrare provin din proiectul IRISE \cite{irise2025}, un studiu de monitorizare a consumului energetic rezidențial la nivel de aparat electrocasnic, realizat în Franța. Scopul proiectului a fost să înțeleagă cum și când consumă energie locuitorii, ca punct de plecare pentru strategii de reducere a consumului. Fiecare aparat din fiecare locuință a fost echipat cu un senzor individual ce transmitea puterea medie consumată la fiecare 10 minute. Datele acoperă perioada de la sfârșitul anilor '90 până la începutul anilor 2000.
 
--	FORMULE CONSUM + PRODUCȚIE
+Setul de date a fost furnizat sub forma unei baze de date SQLite3 cu șapte tabele, pe care le-am exportat în fișiere CSV separate. Accesul la CSV-uri cu pandas este semnificativ mai rapid decât interogările SQL repetate, ceea ce contează în contextul unei simulări multi-agent unde datele sunt citite de zeci de ori pe parcursul execuției.
 
-Pentru o analiză cât mai corectă a modelului care o să fie implementat trebuie calculați niște indicatori de sustenabilitate și indicatori economici: autoconsum (SC), autosuficiență (SS), producția netă echivalentă de energie electrică (NEEG) și valoarea actualizată netă (NPV).
+Tabelul House descrie locuințele monitorizate: fiecare casă are un identificator unic, un cod poștal, o referință către stația meteo asociată și două marcaje de timp (Epoch Time) care indică intervalul în care s-au făcut măsurătorile. Tabelul Appliance listează aparatele electrocasnice per locuință, cu un nume descriptiv și o referință către tipul din ApplianceType. Categoriile includ electrocasnice majore (frigider, mașină de spălat, boiler), aparate de iluminat și echipamente audio-video. Consumul efectiv este stocat în Consumption: pentru fiecare casă există câteva aparate cu valori înregistrate la fiecare timestamp sub formă de putere medie în wați, la fiecare 10 minute. Datele meteorologice sunt distribuite în trei tabele: WeatherStation descrie localizarea fiecărei stații meteo, WeatherData stochează valorile măsurate per variabilă și timestamp, iar Record face conexiunea stațiilor cu perioadele de înregistrare. Din toate variabilele meteorologice, am folosit doar variabila cu identificatorul 4, care reprezintă radiația solară în W/m\textsuperscript{2}. Tocmai această structură, cu consum măsurat pe fiecare aparat și pe fiecare locuință, face setul IRISE potrivit pentru a modela o comunitate energetică: fiecare casă devine un membru cu propriul comportament de consum, iar stația meteo asociată oferă radiația din care se estimează producția.
 
--	FORMULE PENTRU SS, SC, NEEG, NPV
+\section*{4.2 Biblioteci și unelte folosite}
+\addcontentsline{toc}{section}{4.2 Biblioteci și unelte folosite}
 
-Autoconsumul indică ce procent din energia produsă de panourile fotovoltaice este consumată direct de către locuință. Autosuficiența indică ce procent din consumul de energie al locuinței este acoperit de energia produsă de panourile fotovoltaice. Producția netă echivalentă de energie electrică reprezintă cantitatea de energie electrică produsă de sistemul fotovoltaic, luând în considerare și performanțele reale ale panourilor. Valoarea actualizată netă este indicatorul economic care arată dacă o investiție este profitabilă, ținând cont de numărul de ani pe care aceasta este făcută. Cu timpul NPV-ul crește, iar acesta ne arată în cât timp ne putem scoate investiția inițială.
+Proiectul este implementat în Python și se bazează în principal pe cinci biblioteci externe, fiecare acoperind o parte distinctă a fluxului de lucru.
 
-După calculul indicatorilor a fost implementată o metodă de optimizare pentru fiecare dintre ei utilizând differential evolution. Au fost create funcții obiectiv pentru maximizarea SS, SC și NEEG. Pentru rezultate optime s-au efectuat succesiv maximizări pentru SS, SC și ambele în același timp și minimizări pentru NEEG. De asemenea, maximizarea simultan a celor 2 indicatori, SS și SC, este echivalentă cu minimizarea NEEG.
+Pandas este biblioteca principală de manipulare a datelor. Toate cele șapte tabele din CSV-uri sunt încărcate în obiecte DataFrame și utilizate pe toată durata execuției. Operațiile de filtrare, grupare și agregare (de exemplu, gruparea măsurătorilor de 10 minute pe ore) se fac prin pandas. Performanța față de interogări SQL repetate este semnificativ mai bună în contextul simulărilor multi-agent, unde datele sunt accesate de zeci de ori pe secundă.
 
-Urmează crearea sistemului de recomandări și a comunității. Pentru el a fost creată o comunitate de case unde fiecare casă este extrasă din baza de date cu carecteristicile ei. Există 4 agenți în total pentru simularea aceasta: 2 sunt agenți pentru case (PROBABILISTIC și PRESENCE), 2 sunt agenți de recomandări de tip manager de comunitate (COMMUNITY și PRESENCE). Pentru trimiterea recomandărilor a fost creat un criteriu pentru ambii agenți de recomandări astfel: dacă consumul este cu 30\% mai mult sau mai puțin decât producția atunci se trimite recomandare de reducere sau creștere a consumului.
+NumPy este folosit de pandas și în calculele din modulele de procesare energetică. Operațiile de tip np.minimum, np.maximum și sumele reduse pe array-uri sunt folosite la calculul indicatorilor SC, SS și NEEG, unde se operează pe serii temporale de mii de valori orare.
 
-Agenții pentru casa au fost implementați astfel: Probabilistic aplică recomandările în funcție de un procent dat ca parametru pentru toată comunitatea sau de un vector de procente pentru fiecare casă în parte din comunitate, iar Presence aplică recomandările dacă există prezență în casă bazată pe un model de prezență real. Modelul de prezență real a fost realizat pe baza consumurilor fiecărui aparat din casă. Pentru fiecare zi este calculat consumul minim al fiecărui aparat în ziua respectivă, iar dacă consumul unui aparat este de 2 ori mai mare decât minimul se consideră activ. Dacă există minim 2 aparate active se consideră prezență în casă. Agentul va aplica recomandarea dacă este prezență în casă și dacă a primit recomandare.
+SciPy contribuie prin modulul scipy.optimize, specific prin funcția differential\allowbreak\_evolution. Aceasta implementează algoritmul Differential Evolution și returnează numărul optim de panouri pentru fiecare strategie de optimizare. SciPy a fost preferată față de o implementare proprie deoarece oferă mai multe strategii configurabile, gestionarea automată a limitelor domeniului de căutare și criterii de convergență robuste.
 
-Agenții de recomandări de tip manager de comunitate au fost implementați astfel: Community se uită la consumul înregistrat de toată comunitatea și dacă este mai mic sau mai mare cu 30\% decât producția comunității va trimite recomandarea, iar Presence se uită la prezența fiecărei case bazată pe un model de prezență estimată. Modelul de prezență estimată se uită pentru fiecare zi la toate consumurile pe oră și în top 60\% din acestea este declarată prezența în casă. Prin urmare, din 24 de ore o casă ar trebui să fie înregistrată cu prezență aproximativ 14 ore. S-a utilizat această metodă cu un procent de 60\% testând variații ale algoritmului și observând că procentajul acesta este optim pentru sinergia cu agentul de case Presence. În final, agentul va trimite recomandarea dacă este detectată prezența și dacă îndeplinește condiția de ±30\% consum față de producție.
+Mesa este framework-ul Python pentru modelarea sistemelor multi-agent \cite{kazil2020mesa}. Oferă clasele de bază Agent și Model, mecanismul de avansare a timpului discret și colectarea datelor din simulare. Toți cei patru agenți (HouseAgent, PresenceHouseAgent, RecommendationAgent, PresenceRecommendationAgent) moștenesc din Agent, iar modelul simulării moștenește din Model. Mesa gestionează ordinea de execuție a agenților la fiecare pas și permite rularea rapidă a mai multor scenarii consecutive.
 
-Astfel, se vor forma 4 cazuri cu cei 2 agenți de recomandare și cei 2 agenți pentru case:
+Plotly este folosit pentru vizualizarea rezultatelor. Modulele plotly.express și plotly.graph\_objects generează grafice interactive în format HTML: profiluri de consum și producție, comparații între scenarii în funcție de SS și SC, evoluția NPV pe ani. Fiind interactive, graficele permit inspecția valorilor individuale, utilă când analizăm rezultatele.
 
-•	COMMUNITY + PROBABILISTIC - Managerul trimite recomandări în funcție de consumul înregistrat față de producție (±30\%), iar casa o aplică cu o probabilitate stabilită pentru comunitate sau mai multe probabilități specifice pentru fiecare casă;
+\section*{4.3 Curățarea datelor}
+\addcontentsline{toc}{section}{4.3 Curățarea datelor}
 
-•	COMMUNITY + PRESENCE – Managerul trimite recomandări în funcție de consumul înregistrat față de producție (±30\%), iar casa o aplică dacă este detectată prezența pe baza modelului real;
+Datele brute nu pot fi folosite direct în simulări. Am identificat trei categorii de probleme: case cu perioade lungi de date lipsă, case fără date de radiație solară și valori anormale în datele de consum.
 
-•	PRESENCE + PROBABILISTIC - Managerul trimite recomandări pe baza prezenței estimate și pe baza consumului înregistrat față de producție (±30\%), iar casa aplică recomandarea cu o probabilitate stabilită pentru comunitate sau mai multe probabilități specifice pentru fiecare casă;
+Prima categorie se tratează prin eliminarea caselor cu mai mult de 30 de zile consecutive de consum zero. Algoritmul calculează consumul total zilnic per casă și detectează cel mai lung șir de zile cu suma zero. Dacă depășește 30 de zile, casa este eliminată. O vacanță de câteva săptămâni e posibilă, dar un șir mai lung sugerează o defecțiune a sistemului de monitorizare sau date lipsă. O a doua condiție: diferența dintre EndingEpochTime și StartingEpochTime trebuie să depășească un an, deoarece indicatorii SC, SS, NEEG și NPV se calculează pe perioade anuale și o casă cu câteva luni de date ar produce rezultate ce nu pot fi comparate cu restul. Casele fără date de radiație solară sunt eliminate și ele: dacă stația meteo asociată nu are nicio înregistrare cu WeatherVariableIDREF~=~4, producția fotovoltaică nu poate fi estimată.
 
-•	PRESENCE + PRESENCE - Managerul trimite recomandări pe baza prezenței estimate și pe baza consumului înregistrat față de producție (±30\%), iar casa o aplică dacă este detectată prezența pe baza modelului real;
+Odată stabilită lista caselor valide, se elimină din toate tabelele dependente înregistrările care nu mai au sens: aparatele și consumul caselor eliminate, stațiile meteo rămase fără case și datele meteo ale stațiilor eliminate. Pasul garantează consistența referențială între tabele. La nivel de aparat, parcurg seria de 10 minute și compar fiecare valoare cu media celor două valori vecine imediate, iar dacă valoarea curentă o depășește de 3 ori, o înlocuiesc cu media locală. Pragul de 3 este ales să nu afecteze pornirile bruște reale ale aparatelor mari. Ultimul pas corectează valorile negative din datele meteorologice: radiația solară nu poate fi negativă fizic, deci orice valoare sub zero este setată la zero.
 
-Pe parcursul proiectului au fost create mai multe grafice folosind librăria plotly care au fost analizate și au ajutat la îmbunătățirea algoritmilor. Printre acestea se numără: profil de consum la 10 minute pe o zi pentru o casă, profil de consum orar pe o zi pentru o casă, profil de consum zilnic pe un an pentru o casă, producția solară pe ore dintr-o zi pentru o casă, comparație de consum și producție pe ore dintr-o zi, evoluția NPV în funcție de numărul de ani, comparații între prezența estimată și prezența reală, performanța celor 4 scenarii de recomandări pentru un număr fix de case, scenariul optim pentru maximizarea SS și SC în funcție de dimensiunea comunității, comparații între scenariile de recomandări.
+Tabelul~\ref{tab:curatare} rezumă câte case au fost eliminate la fiecare criteriu și câte au rămas în setul final. Cele 32 de case rămase formează comunitatea energetică simulată în restul capitolului.
 
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|c|c|}
+    \hline
+    \textbf{Operație}               & \textbf{Nr. case eliminate} & \textbf{Motiv}                 \\
+    \hline
+    30 de zile consum zero          & 1                           & consum zero consecutiv         \\
+    \hline
+    Mai puțin de un an              & 3                           & perioadă insuficientă          \\
+    \hline
+    Fără radiație solară            & 62                          & lipsesc date meteo             \\
+    \hline
+    \textbf{Total case rămase}      & \textbf{32}                 &                                \\
+    \hline
+    Spike-uri corectate (valori)    & 375794                      & valori $>3\times$ media locală \\
+    \hline
+    Valori meteo negative corectate & 16308                       & defecte senzori                \\
+    \hline
+  \end{tabular}
+  \caption{Rezultatele procesului de curățare a datelor}
+  \label{tab:curatare}
+\end{table}
 
-Descriu datele folosite, de unde am toate datele, cum dimensionez centrala fotovoltaica si cum definesc scenarii. (Date concrete, 10 case, 5 panouri...)
+\section*{4.4 Calculul producției și consumului}
+\addcontentsline{toc}{section}{4.4 Calculul producției și consumului}
 
-Rezultate si interpretarea lor
+Datele din Consumption.csv sunt la rezoluție de 10 minute: pentru fiecare oră există 6 înregistrări per aparat. Simularea operează per oră, deci primul pas de prelucrare este agregarea, care aplanează diferențele mari de pe intervalele scurte.
+
+Agregarea rotunjește fiecare marcaj temporal la începutul orei, sumează cele 6 valori de putere și le convertește în kWh conform formulei prezentate în capitolul 3. Consumul total al casei la fiecare oră este suma consumurilor tuturor aparatelor.
+
+Figurile~\ref{fig:consum_appliance} și~\ref{fig:consum_zi} arată consumul televizorului și consumul total al casei 2000938 într-o zi lucrătoare.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.85\textwidth]{consum_appliance_zi}}
+  \caption{Consum orar TV (60 cm), casa 2000938, vineri 1998-03-20}
+  \label{fig:consum_appliance}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.85\textwidth]{consum_ora_zi}}
+  \caption{Consum total orar, casa 2000938, vineri 1998-03-20}
+  \label{fig:consum_zi}
+\end{figure}
+
+Vineri (1998-03-20), televizorul de 60 cm din casa 2000938 (Figura~\ref{fig:consum_appliance}) este complet oprit în primele ore ale dimineții și pornit în două intervale: un bloc scurt în jurul orei 10-12 cu aproximativ 35-38~Wh, și un bloc lung de la ora 16 până la 22, cu putere ce urcă treptat până la circa 85~Wh pe la ora 19. Absența televizorului dimineața și la prânz indică o locuință neocupată. Consumul total al casei în aceeași zi (Figura~\ref{fig:consum_zi}) prezintă un vârf devreme, în jurul orei 04-05 (0.93~kWh), urmat de un nivel relativ constant de 0.4-0.7~kWh pe parcursul zilei, cu un al doilea vârf seara la ora 19 (1.05~kWh) când persoanele revin acasă.
+
+Figurile~\ref{fig:consum_appliance_weekend} și~\ref{fig:consum_zi_weekend} arată aceleași mărimi într-o zi de weekend.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.85\textwidth]{consum_appliance_zi_weekend}}
+  \caption{Consum orar TV (60 cm), casa 2000938, sâmbătă 1998-03-21}
+  \label{fig:consum_appliance_weekend}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.85\textwidth]{consum_ora_zi_weekend}}
+  \caption{Consum total orar, casa 2000938, sâmbătă 1998-03-21}
+  \label{fig:consum_zi_weekend}
+\end{figure}
+
+Sâmbătă (1998-03-21), profilul aceluiași televizor de 60~cm din casa 2000938 (Figura~\ref{fig:consum_appliance_weekend}) arată un tipar diferit față de ziua lucrătoare: aparatul rămâne oprit toată dimineața și la prânz și este folosit doar seara, într-un singur interval continuu, de la ora 15 până spre ora 23. Consumul urcă rapid la 80~Wh între orele 16 și 19, apoi scade treptat până se stinge. Spre deosebire de vineri, nu mai apare blocul scurt de la prânz, ci o singură utilizare prelungită de seară. Consumul total orar al casei în aceeași zi de weekend (Figura~\ref{fig:consum_zi_weekend}) arată în schimb o activitate susținută pe mare parte a zilei. Se remarcă un vârf în jurul orei 8 (1.35~kWh) și un al doilea vârf după-amiaza, spre ora 18 (1.25~kWh), separate de o scădere vizibilă la mijlocul zilei, în jurul orelor 13-14 (0.6~kWh). Față de vineri, nivelurile sunt în general mai ridicate, iar consumul de peste zi este mai consistent, ceea ce sugerează o locuință ocupată pentru o parte mai mare a zilei, specifică unui weekend.
+
+Diferența dintre cele două zile ilustrează importanța modelării ocupanței în simulările energetice: un profil de consum de zi lucrătoare nu poate fi folosit direct pentru estimarea weekendului, iar sistemul de recomandări trebuie să țină cont de aceste variații pentru a propune soluții realiste.
+
+Producția fotovoltaică estimată se calculează pe baza radiației solare înregistrate de stația meteo asociată casei, conform formulei din capitolul 3, cu $P_M = 575$ W per panou și factorul de performanță $f = 0.8$. Graficele de producție prezentate în această secțiune au fost generate pentru $n = 3$ panouri, valoare folosită ca referință pentru casa individuală. Formula se aplică și centralei comunitare cu panouri fotovoltaice din simularea multi-agent, singura diferență este numărul de panouri $n$.
+
+Figura~\ref{fig:consum_vs_prod} arată suprapunerea dintre consumul orar și producția estimată pentru o zi tipică. Decalajul dintre vârful de producție (prânz) și vârfurile de consum (dimineață, seară) este tocmai problema pe care sistemul de recomandări încearcă să o atenueze.
+
+\begin{figure}[h]
+  \centering
+  \fbox{\includegraphics[width=0.85\textwidth]{consum_vs_prod_initial}}
+  \caption{Consum vs. producție fotovoltaică, casa 2000938, 1998-03-20}
+  \label{fig:consum_vs_prod}
+\end{figure}
+
+\section*{4.5 Calculul indicatorilor energetici}
+\addcontentsline{toc}{section}{4.5 Calculul indicatorilor energetici}
+
+Autoconsumul local la fiecare oră este minimul dintre energia produsă și energia consumată, adică cât din producție se consumă direct pe loc, fără să treacă prin rețea. Pe baza lui se calculează SC și SS (formulele sunt prezentate în capitolul 3). SC măsoară ce procent din energia produsă nu ajunge în rețea, iar SS măsoară ce procent din consum este acoperit de producția proprie. Cei doi indicatori funcționează astfel: cu cât instalezi mai multe panouri, SS crește, dar SC poate scădea dacă producția depășește consumul la prânz și energia este exportată.
+
+NEEG, definit în capitolul 3, sumează energia importată din rețea și energia exportată în rețea. Un NEEG mic înseamnă că schimburile cu rețeaua sunt reduse, benefic atât pentru proprietar cât și pentru operatorul de rețea. NPV evaluează rentabilitatea investiției pe un orizont de $Y$ ani, conform formulei din capitolul 3, cu parametrii: costul per watt-peak $C_{Wp}$, costul anual de operare și mentenanță de 3\% din CapEX, rata de actualizare $r$ și prețul energiei electrice. Economia anuală față de varianta fără panouri se calculează din consumul și autoconsumul anual preluate din datele disponibile.
+
+Indicatorii se calculează pe seriile temporale de consum și producție ale casei, mai exact pe orele pentru care există atât date de consum, cât și date de radiație solară. Criteriul de curățare de la Secțiunea~4.3 garantează cel puțin un an de date per casă, deci toți indicatorii sunt calculați pe perioade complete de 12 luni. O astfel de analiză poate fi reluată o dată pe an, pentru a urmări evoluția indicatorilor SC, SS, NEEG și NPV și a observa cum se schimbă comunitatea de la un an la altul.
+
+Pentru claritate, indicatorii sunt ilustrați aici pe o singură casă, casa 2000938, însă se calculează la fel pentru întreaga comunitate. Tabelul~\ref{tab:indicatori_initial} prezintă valorile SC, SS și NEEG pentru casa 2000938 la 1, 3, 5, 8 și 10 panouri, înainte de optimizare. Tabelul~\ref{tab:npv_panouri} arată evoluția NPV pentru aceleași configurații, la 1, 5, 10 și 20 de ani de la investiție.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Configurație}    & \textbf{SC} & \textbf{SS} & \textbf{NEEG (kWh)} \\
+    \hline
+    Fără panouri (referință) & -           & 0           & 4851.958            \\
+    \hline
+    1 panou                  & 0.762       & 0.098       & 4524.022            \\
+    \hline
+    3 panouri                & 0.507       & 0.196       & 4825.268            \\
+    \hline
+    5 panouri                & 0.394       & 0.254       & 5517.062            \\
+    \hline
+    8 panouri                & 0.3         & 0.309       & 6855.654            \\
+    \hline
+    10 panouri               & 0.26        & 0.335       & 7851.883            \\
+    \hline
+  \end{tabular}
+  \caption{Indicatori energetici pentru casa 2000938 la diverse configurații de panouri}
+  \label{tab:indicatori_initial}
+\end{table}
+
+Tendințele din Tabelul~\ref{tab:indicatori_initial} confirmă relația de compromis dintre cei doi indicatori. Cu un singur panou, autoconsumul este ridicat (SC = 0.762): producția fiind mică, aproape tot ce generează panoul se consumă pe loc, fără să fie exportat. Pe măsură ce numărul de panouri crește, SC scade constant până la 0.260 la 10 panouri, deoarece surplusul de la prânz depășește tot mai des consumul casei și se pierde în rețea. Autosuficiența evoluează invers, crescând de la 0.098 la 0.335, însă cu un câștig din ce în ce mai mic pentru fiecare panou adăugat, fiindcă producția suplimentară apare tot la prânz, când o parte din consum este deja acoperită.
+
+NEEG urmează aceeași logică. Valoarea de la referință, 4851.96 kWh, reprezintă întregul consum al casei adus din rețea, fiindcă fără panouri nu există producție proprie. Un singur panou reduce NEEG la 4524 kWh, pentru că puțina energie produsă înlocuiește direct import, fără să genereze export semnificativ. De la 5 panouri în sus, NEEG urcă peste valoarea de referință (5517 kWh, apoi 6856 kWh și 7852 kWh), pentru că surplusul exportat se adaugă la schimbul total cu rețeaua. Minimul lui NEEG se află astfel între 1 și 3 panouri, exact acolo unde echilibrul dintre SC și SS este cel mai bun.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    \textbf{Nr. panouri} & \textbf{Anul 1 (investiție)} & \textbf{Anul 5} & \textbf{Anul 10} & \textbf{Anul 20} \\
+    \hline
+    1 panou              & -270.311                     & -5.466          & 260.568          & 632.335          \\
+    \hline
+    3 panouri            & -895.825                     & -402.319        & 93.403           & 786.145          \\
+    \hline
+    5 panouri            & -1555.981                    & -956.646        & -354.62          & 486.674          \\
+    \hline
+    8 panouri            & -2572.902                    & -1909.464       & -1243.047        & -311.769         \\
+    \hline
+    10 panouri           & -3260.06                     & -2586.544       & -1910.003        & -964.579         \\
+    \hline
+  \end{tabular}
+  \caption{Evoluția NPV (EUR) pentru casa 2000938 în funcție de numărul de panouri}
+  \label{tab:npv_panouri}
+\end{table}
+
+Tabelul~\ref{tab:npv_panouri} traduce acești indicatori în termeni financiari. În primul an, NPV este puternic negativ pentru orice configurație, fiindcă include costul inițial al investiției (CapEx), care nu a fost încă recuperat. În anii următori, economia anuală din autoconsum se acumulează și aduce NPV-ul spre zero, apoi spre valori pozitive. Configurațiile mici se amortizează cel mai repede: cu 1 și 3 panouri, NPV devine pozitiv în jurul anului 10, iar în cazul unui singur panou pragul de rentabilitate este atins deja aproape de anul 5. La 20 de ani, configurația de 3 panouri oferă cel mai bun rezultat (786 EUR), urmată de cea de 1 panou (632 EUR), în timp ce 5 panouri abia trec pe profit (487 EUR).
+
+Configurațiile mari spun o poveste diferită. Cu 8 și 10 panouri, NPV rămâne pe pierdere chiar și după 20 de ani, cu o pierdere de 312 EUR la 8 panouri și de 965 EUR la 10 panouri. Cu alte cuvinte, dacă punem prea multe panouri pe o singură casă, investiția devine neprofitabilă. Explicația vine direct din ceilalți indicatori: factura scade doar cu energia pe care casa o folosește chiar atunci când panourile o produc, nu cu tot ceea ce produc panourile. Pe măsură ce SC scade, o parte tot mai mare din energie ajunge în rețea și nu se mai regăsește în factură. Costul, în schimb, crește liniar cu numărul de panouri, prin CapEx și prin mentenanța anuală. Acesta este motivul pentru care dimensionarea centralei trebuie optimizată, nu maximizată.
+
+\section*{4.6 Optimizarea dimensionării centralei fotovoltaice}
+\addcontentsline{toc}{section}{4.6 Optimizarea dimensionării centralei fotovoltaice}
+
+Numărul de panouri $n$ influențează direct SC, SS și NEEG: prea puține panouri înseamnă SS mic, prea multe înseamnă SC mic și mult export. Funcțiile obiectiv nu sunt derivabile în raport cu $n$, deci metodele bazate pe gradient nu se pot aplica direct. Am ales Differential Evolution (DE) \cite{stornprice1997}, un algoritm evolutiv pentru optimizare globală în spații continue. DE menține o populație de soluții candidate și, la fiecare generație, le combină prin mutație și crossover pentru a genera candidați noi. Un candidat nou înlocuiește soluția veche dacă are o valoare mai bună a funcției obiectiv. Față de metodele de căutare locală, DE explorează mai bine spațiul de căutare și este mai puțin sensibil la minime locale. Am folosit implementarea din scipy.optimize.differential\_evolution cu spațiul de căutare $n \in [1, 40]$ și maxim 40 de iterații.
+
+Am definit patru variante de optimizare, fiecare cu alt obiectiv. Prima maximizează suma SC + SS cu ponderi egale și caută echilibrul dintre a nu exporta mult și a acoperi cât mai mult din consum local. A doua maximizează doar SS și pune accent pe independența față de rețea, chiar dacă o parte din producție se exportă. A treia maximizează doar SC și preferă un număr mai mic de panouri, ca să se consume pe loc tot ce se produce. A patra minimizează direct NEEG, ceea ce, conform proprietății din \cite{simoiu2021jcp}, revine la a maximiza simultan SC și SS cu ponderi egale. Tabelul~\ref{tab:optimizare} prezintă numărul optim de panouri și indicatorii pentru fiecare strategie. Maximizarea SS cere mai multe panouri decât maximizarea SC, fiindcă mai multă producție acoperă o parte mai mare din consum și SS crește, dar surplusul se exportă fără să fie folosit local și SC scade. Minimizarea NEEG ajunge la aceleași valori ca Max SC + SS, exact cum prevede echivalența de mai sus. Dimensionarea este ilustrată tot pe o singură casă, însă aceeași procedură alege și numărul de panouri al centralei comune, potrivit mărimii comunității.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    \textbf{Strategie} & \textbf{$n$ optim} & \textbf{SC} & \textbf{SS} & \textbf{NEEG (kWh)} \\
+    \hline
+    Max SC + SS        & 1                  & 0.762       & 0.098       & 4524.022            \\
+    \hline
+    Max SS             & 40                 & 0.090       & 0.468       & 25315.288           \\
+    \hline
+    Max SC             & 1                  & 0.762       & 0.098       & 4524.022            \\
+    \hline
+    Min NEEG           & 1                  & 0.762       & 0.098       & 4524.022            \\
+    \hline
+  \end{tabular}
+  \caption{Rezultatele optimizării numărului de panouri pentru casa 2000938}
+  \label{tab:optimizare}
+\end{table}
+
+Figurile~\ref{fig:consum_vs_prod_opt_iarna} și~\ref{fig:consum_vs_prod_opt_vara} arată profilul consum-producție pentru configurația optimă (un panou, conform Tabelului~\ref{tab:optimizare}) în două zile reprezentative, una de iarnă și una de vară. Comparația dintre ele scoate în evidență cât de mult depind de anotimp atât producția, cât și consumul.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.85\textwidth]{consum_vs_prod_opt_iarna}}
+  \caption{Consum și producție pentru configurația optimă, casa 2000938, 1998-03-20}
+  \label{fig:consum_vs_prod_opt_iarna}
+
+  \vspace{1em}
+  \fbox{\includegraphics[width=0.85\textwidth]{consum_vs_prod_opt_vara}}
+  \caption{Consum și producție pentru configurația optimă, casa 2000938, 1998-07-20}
+  \label{fig:consum_vs_prod_opt_vara}
+\end{figure}
+
+Anotimpul schimbă radical ambele mărimi. Iarna (Figura~\ref{fig:consum_vs_prod_opt_iarna}), producția unui panou este redusă și concentrată în jurul prânzului, cu un maxim de aproximativ 0.27~kWh și valori nenule doar între orele 8 și 19, fiindcă zilele sunt scurte și radiația slabă. În același timp, consumul este ridicat, cu un vârf dimineața (0.93~kWh în jurul orei 5) și altul seara (1.05~kWh la ora 19). Vara (Figura~\ref{fig:consum_vs_prod_opt_vara}), situația se inversează. Producția aceluiași panou este mai mare și se întinde pe mai multe ore, cu un maxim de aproximativ 0.35~kWh în jurul orei 13 și valori nenule de la ora 6 până spre ora 21, în timp ce consumul casei scade mult și rămâne în jur de 0.1~kWh pe cea mai mare parte a zilei.
+
+Variația anotimpurilor are efecte opuse asupra indicatorilor. Iarna, producția nu depășește aproape niciodată consumul, deci aproape tot ce generează panoul se consumă local, ceea ce înseamnă un SC ridicat, dar acoperă o fracțiune mică din necesarul casei, deci un SS scăzut. Vara, la prânz producția depășește consumul redus al casei, așa că o parte se exportă și SC scade, însă acoperă o fracțiune mai mare din consumul total al zilei și SS crește.
+
+Tocmai de aceea indicatorii SC, SS și NEEG se calculează pe întregul an, nu pe o singură zi. Numărul optim de panouri din Tabelul~\ref{tab:optimizare} este un compromis pe tot anul, nu soluția ideală pentru fiecare zi în parte. Într-o zi de iarnă (Figura~\ref{fig:consum_vs_prod_opt_iarna}), această configurație pare bine dimensionată, fiindcă toată producția este absorbită de consum și nu se pierde nimic. În aceeași configurație, dar într-o zi de vară (Figura~\ref{fig:consum_vs_prod_opt_vara}), apare deja un surplus exportat la prânz. O configurație optimă pe an nu este neapărat optimă în fiecare zi, iar găsirea acestui compromis este exact rolul algoritmului de optimizare.
+
+\section*{4.7 Simularea multi-agent}
+\addcontentsline{toc}{section}{4.7 Simularea multi-agent}
+
+\subsection*{Configurarea simulării}
+\addcontentsline{toc}{subsection}{4.7.1 Configurarea simulării}
+
+Cele două tipuri de agenți și logica recomandărilor sunt descrise pe larg în Secțiunea~3.5. În implementare, fiecare dintre cele patru variante, managerul community și cel presence, respectiv casa probabilistic și cea presence, corespunde unei clase construite peste cadrul Mesa, care execută la fiecare oră simulată logica prezentată acolo. În cele ce urmează ne concentrăm pe configurația folosită pentru comunitatea reală, pe validarea modelului de prezență și pe rezultate.
+
+Modelul de prezență al managerului se bazează pe consumul orar total al casei față de percentile 50 al distribuției sale zilnice. Valoarea 50 a fost aleasă după testarea repetată a pragurilor din intervalul 30-70. Sub 30, pragul e atât de jos încât aproape fiecare oră e marcată ca ocupată, iar peste 70 e atât de sus încât aproape niciuna, deci valorile din afara acestui interval nu sunt rezonabile. Prezența reală se determină din comportamentul aparatelor: cel puțin 2 aparate active simultan, cu consum mai mare decât dublul minimului zilnic al fiecăruia.
+
+Tabelul~\ref{tab:acuratete_prezenta} adună metricile de acuratețe pe toate cele 32 de case. Acuratețea globală este de 77.58\%, iar fals pozitivele (32910) și fals negativele (31856) sunt apropiate ca număr, ceea ce arată că managerul ratează prezența cam tot atât de des pe cât o supraestimează. Cele 12069 de zile analizate reprezintă totalul pe toate casele: aceleași zile calendaristice apar la mai multe case și se adună, astfel încât revin în jur de 377 de zile per casă.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Metrică}                              & \textbf{Valoare} \\
+    \hline
+    Acuratețe globală (\%)                        & 77.58            \\
+    \hline
+    True Positive (ore prezente corect detectate) & 109465           \\
+    \hline
+    True Negative (ore absente corect detectate)  & 114613           \\
+    \hline
+    False Positive (ore goale marcate ca ocupate) & 32910            \\
+    \hline
+    False Negative (ore ocupate ratate)           & 31856            \\
+    \hline
+    Zile analizate                                & 12069            \\
+    \hline
+  \end{tabular}
+  \caption{Acuratețea modelului de prezență al managerului}
+  \label{tab:acuratete_prezenta}
+\end{table}
+
+Centrala fotovoltaică este comună întregii comunități: producția orară se calculează din radiația solară a unei stații meteo și este distribuită tuturor caselor, fiindcă scenariul real presupune o instalație partajată, nu suma instalațiilor individuale. Numărul de case și numărul de panouri sunt variabile în simulările de mai jos, iar restul parametrilor rămân constanți. Fiecare panou are puterea $P_M = 575$~W și un factor de performanță $f = 0.8$. Managerul folosește pragurile $\alpha = 1.3$ și $\beta = 0.7$: REDUCE se emite când consumul depășește producția cu peste 30\%, iar INCREASE când producția depășește consumul cu peste 30\%. Praguri mai strânse ar genera recomandări prea dese, iar unele mai largi ar interveni prea rar. Când o casă aplică o recomandare, consumul ei se înmulțește cu 0.7 la REDUCE și cu 1.3 la INCREASE. Modelul de prezență folosește percentile 50 și un minim de 2 aparate active, valorile discutate mai sus. În scenariile cu case probabilistice presupunem o rată de adoptare de 100\%, adică toți locatarii urmează recomandarea, pentru a observa câștigul maxim posibil.
+
+Am rulat patru scenarii, obținute prin combinarea celor două tipuri de manager cu cele două tipuri de agent casă descrise în Secțiunea~3.5. Fiecare scenariu corespunde unor ipoteze diferite despre comportamentul locatarilor și despre nivelul de personalizare al recomandărilor.
+
+Primul scenariu combină managerul community cu casa probabilistic. Managerul generează o recomandare pe baza consumului agregat al întregii comunități, iar fiecare casă o aplică cu o probabilitate configurabilă $p \in [0, 1]$, indiferent dacă locatarul e acasă sau nu. O valoare $p = 1$ înseamnă că toți locatarii urmează întotdeauna recomandarea, iar $p = 0.5$ înseamnă că statistic jumătate dintre recomandări sunt urmate și jumătate ignorate. Cu cât $p$ e mai mare, cu atât câștigul e mai aproape de limita teoretică. Scenariul testează cât de mult contează rata de adoptare a locatarilor, independent de prezența lor fizică.
+
+Al doilea scenariu păstrează managerul community, dar înlocuiește casa cu varianta presence. Managerul trimite recomandările în funcție de diferența dintre consumul agregat și producția comunității, fără să țină cont de prezența locatarilor, așa că recomandările ajung la toate casele. Diferența față de primul scenariu este că o casă aplică recomandarea numai dacă detectează prezența locatarilor în acel moment. Dacă un locatar este absent, recomandarea este primită, dar ignorată.
+
+Al treilea scenariu introduce managerul presence, combinat cu casa probabilistic la o rată de aplicare $p$ configurabilă. Față de scenariul anterior, diferența este că acum și managerul ține cont de prezență: el estimează care case sunt ocupate și trimite recomandări numai acelora, în loc să difuzeze aceeași recomandare tuturor. Casele care primesc recomandarea o aplică cu probabilitatea $p$, indiferent de context. Scopul acestui scenariu este să testeze dacă filtrarea suplimentară din partea managerului, adică trimiterea recomandărilor mai țintit, aduce un beneficiu față de difuzarea generală din scenariul doi.
+
+Al patrulea scenariu este cel mai apropiat de realitate: managerul presence estimează prezența per casă și trimite recomandări selective, iar casele presence aplică recomandările numai dacă detectează și ele prezența locatarilor în mod independent. Cele două modele de prezență funcționează separat și nu coincid întotdeauna: managerul poate considera o casă ocupată pe când casa se consideră goală și invers. Rezultatul este că o parte din recomandări se pierd în ambele direcții: fie nu sunt trimise, fie sunt trimise, dar ignorate. Aceasta produce cele mai conservatoare rezultate dintre cele patru scenarii și reflectă cel mai bine condițiile reale de funcționare ale sistemului.
+
+Toate cele patru scenarii se compară cu o referință fără nicio recomandare, adică consumul nemodificat al comunității, fără nicio intervenție din partea sistemului. Diferența față de referință arată câștigul real al sistemului în fiecare configurație și dacă recomandările au efect măsurabil în condițiile ipotezelor respective.
+
+\subsection*{Rezultatele simulărilor}
+\addcontentsline{toc}{subsection}{4.7.2 Rezultatele simulărilor}
+
+Pentru fiecare configurație a comunității rulăm mai multe simulări, câte una pentru fiecare dintre cele patru scenarii, plus referința fără recomandări. Rezultatele unei simulări se rezumă într-un grafic care arată toate cele patru scenarii pe axa $1-SS$ în funcție de $1-SC$: cu cât un punct este mai aproape de origine, cu atât scenariul este mai bun. Variem apoi numărul de case și numărul de panouri, pentru a vedea dacă efectul recomandărilor se păstrează.
+
+Un număr favorabil de panouri pentru comunitate este unul care reduce NEEG și, în același timp, îmbunătățește SS și SC. Un singur panou de fiecare casă este prea puțin, fiindcă acoperă o fracțiune mică din consum, așa că pornim de la aproximativ trei panouri de fiecare casă. Alegem la început 32 de case, deoarece atâtea locuințe distincte rămân în baza de date după curățare. La aproximativ trei panouri de fiecare casă ar rezulta 96 de panouri, însă folosim o aproximație de 100, mai ușor de urmărit. Diferența față de 96 nu este semnificativă pentru rezultate. Tabelul~\ref{tab:sim_a} prezintă SC, SS și NEEG pentru referință și cele patru scenarii, iar Figura~\ref{fig:sim_a} le compară pe axa $1-SS$ în funcție de $1-SC$.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Configurație}        & \textbf{SC}     & \textbf{SS}     & \textbf{NEEG (kWh)} \\
+    \hline
+    Referință                    & 0.32            & 0.38            & 68562.61            \\
+    \hline
+    1. Community + Probabilistic & 0.39 (+20.52\%) & 0.45 (+17.52\%) & 62253.99 (-9.2\%)   \\
+    \hline
+    2. Community + Presence      & 0.37 (+15.71\%) & 0.43 (+13.66\%) & 63660.63 (-7.15\%)  \\
+    \hline
+    3. Presence + Probabilistic  & 0.29 (-9.06\%)  & 0.41 (+7.72\%)  & 64335.84 (-6.16\%)  \\
+    \hline
+    4. Presence + Presence       & 0.30 (-8.37\%)  & 0.40 (+6.75\%)  & 64767.43 (-5.54\%)  \\
+    \hline
+  \end{tabular}
+  \caption{SC, SS și NEEG pentru cele 4 scenarii față de referință (32 case, 100 panouri)}
+  \label{tab:sim_a}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \fbox{\includegraphics[width=0.64\textwidth]{scenarii_32_100}}
+  \caption{Cele 4 scenarii pe axa $1-SS$ vs. $1-SC$ (32 case, 100 panouri)}
+  \label{fig:sim_a}
+\end{figure}
+
+În Figura~\ref{fig:sim_a}, cele patru scenarii se separă în două grupuri după tipul de manager. Scenariile cu manager community (albastru și roșu) stau mai jos și mai la stânga, cu 1-SC în jur de 0.61-0.63, deci cu cel mai bun autoconsum. Scenariile cu manager presence (verde și mov) rămân sus, cu 1-SC în jur de 0.70, adică un SC mai mic. Diferența vine din felul în care managerul community citește producția centralei. La prânz, când producția depășește consumul, el trimite INCREASE, iar casele care urmează recomandarea consumă mai mult atunci și folosesc energia care altfel s-ar fi exportat. Așa cresc și SC, și SS, iar autoconsumul urcă cu peste 20\% la Community + Probabilistic. Acesta rămâne scenariul cel mai bun, cel în care toți locatarii urmează recomandarea. Între casa probabilistică și cea presence, sub același manager, diferența este mică, semn că nivelul la care se filtrează recomandările contează mai mult decât comportamentul fiecărei case.
+
+Pentru contrast, repetăm simularea pe aceleași 32 de case, dar cu un singur panou de fiecare casă, adică 32 de panouri. Aceasta este o centrală dimensionată mai mică, care produce puțin față de consumul comunității. Tabelul~\ref{tab:sim_a2} și Figura~\ref{fig:sim_a2} arată cum se schimbă SC, SS și NEEG față de configurația cu 100 de panouri.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Configurație}        & \textbf{SC}    & \textbf{SS}     & \textbf{NEEG (kWh)} \\
+    \hline
+    Referință                    & 0.71           & 0.27            & 40933.27            \\
+    \hline
+    1. Community + Probabilistic & 0.78 (+9.66\%) & 0.31 (+18.03\%) & 35001.48 (-14.49\%) \\
+    \hline
+    2. Community + Presence      & 0.76 (+7.23\%) & 0.30 (+13.68\%) & 36318.78 (-11.27\%) \\
+    \hline
+    3. Presence + Probabilistic  & 0.65 (-8.98\%) & 0.31 (+15.31\%) & 33024.97 (-19.32\%) \\
+    \hline
+    4. Presence + Presence       & 0.65 (-8.46\%) & 0.30 (+12.98\%) & 33905.30 (-17.17\%) \\
+    \hline
+  \end{tabular}
+  \caption{SC, SS și NEEG pentru cele 4 scenarii față de referință (32 case, 32 panouri)}
+  \label{tab:sim_a2}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \fbox{\includegraphics[width=0.64\textwidth]{scenarii_32_32}}
+  \caption{Cele 4 scenarii pe axa $1-SS$ vs. $1-SC$ (32 case, 32 panouri)}
+  \label{fig:sim_a2}
+\end{figure}
+
+Cu un singur panou de fiecare casă (Figura~\ref{fig:sim_a2}), comportamentul se schimbă mult. Toate cele patru puncte coboară mult pe axa 1-SC, spre 0.22-0.24 la scenariile community și spre 0.35 la cele presence, fiindcă producția mică este aproape în întregime consumată pe loc și SC este ridicat. În schimb 1-SS urcă spre 0.70, pentru că această producție acoperă doar o fracțiune din consum. Tot aici recomandările reduc NEEG cel mai mult dintre toate configurațiile, până la 19\% la managerul presence. Cum producția e mică, recomandările sunt aproape numai de tip REDUCE, deci taie din consum și scad importul adus din rețea. Aceasta este situația tipică a unei centrale subdimensionate, eficientă la autoconsum, dar slabă la autonomie.
+
+O întrebare firească este dacă ajută ca centrala fotovoltaică să fie supradimensionată față de comunitate. Pentru a vedea efectul, simulăm aceleași 32 de case, dar cu 300 de panouri, adică aproape nouă panouri de fiecare casă. Tabelul~\ref{tab:sim_a3} și Figura~\ref{fig:sim_a3} arată cum se schimbă indicatorii.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Configurație}        & \textbf{SC}     & \textbf{SS}     & \textbf{NEEG (kWh)} \\
+    \hline
+    Referință                    & 0.13            & 0.44            & 176181.19           \\
+    \hline
+    1. Community + Probabilistic & 0.16 (+25.38\%) & 0.51 (+15.69\%) & 169386.06 (-3.86\%) \\
+    \hline
+    2. Community + Presence      & 0.15 (+19.47\%) & 0.50 (+12.37\%) & 170917.07 (-2.99\%) \\
+    \hline
+    3. Presence + Probabilistic  & 0.12 (-5.26\%)  & 0.46 (+5.14\%)  & 173631.47 (-1.45\%) \\
+    \hline
+    4. Presence + Presence       & 0.12 (-5.08\%)  & 0.46 (+4.46\%)  & 173921.57 (-1.28\%) \\
+    \hline
+  \end{tabular}
+  \caption{SC, SS și NEEG pentru cele 4 scenarii față de referință (32 case, 300 panouri)}
+  \label{tab:sim_a3}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \fbox{\includegraphics[width=0.64\textwidth]{scenarii_32_300}}
+  \caption{Cele 4 scenarii pe axa $1-SS$ vs. $1-SC$ (32 case, 300 panouri)}
+  \label{fig:sim_a3}
+\end{figure}
+
+În Figura~\ref{fig:sim_a3}, toate punctele urcă sus pe axa 1-SC, spre 0.84-0.88, fiindcă o centrală atât de mare produce la prânz mult mai mult decât poate consuma comunitatea, iar surplusul se exportă fără să reducă factura. Pe axa 1-SS punctele se mută în schimb spre stânga, spre 0.49-0.54, deci autosuficiența este mai bună decât în celelalte configurații. Recomandările managerului community ridică acum SC cel mai mult în termeni relativi, cu peste 25\%, fiindcă este mult surplus de absorbit, dar pornind de la o valoare mică SC rămâne tot scăzut, în jur de 0.16. Efectul pe NEEG este aici cel mai slab, sub 4\%, pentru că surplusul rămâne dominant indiferent de recomandări. Supradimensionarea nu ajută comunitatea, fiindcă peste un anumit prag panourile în plus produc energie care se pierde în rețea. Echilibrul căutat rămâne o centrală dimensionată aproape de consumul comunității, acolo unde recomandările au cel mai mult de lucru.
+
+Pentru a verifica dacă rezultatele se păstrează la o comunitate mai mare, posibil după creșterea ei, repetăm simularea pentru 100 de case cu 300 de panouri, păstrând același raport de aproximativ trei panouri de fiecare casă. Tabelul~\ref{tab:sim_b} și Figura~\ref{fig:sim_b} arată dacă valorile sunt mai bune sau similare cu cele de la comunitatea mică.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Configurație}        & \textbf{SC}     & \textbf{SS}     & \textbf{NEEG (kWh)} \\
+    \hline
+    Referință                    & 0.34            & 0.37            & 208757.65           \\
+    \hline
+    1. Community + Probabilistic & 0.40 (+20.29\%) & 0.44 (+17.58\%) & 189094.56 (-9.42\%) \\
+    \hline
+    2. Community + Presence      & 0.39 (+15.6\%)  & 0.43 (+13.74\%) & 193428.75 (-7.34\%) \\
+    \hline
+    3. Presence + Probabilistic  & 0.30 (-9.17\%)  & 0.40 (+8.05\%)  & 194921.97 (-6.63\%) \\
+    \hline
+    4. Presence + Presence       & 0.31 (-8.51\%)  & 0.40 (+7.05\%)  & 196302.99 (-5.97\%) \\
+    \hline
+  \end{tabular}
+  \caption{SC, SS și NEEG pentru cele 4 scenarii față de referință (100 case, 300 panouri)}
+  \label{tab:sim_b}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.64\textwidth]{scenarii_100_300}}
+  \caption{Cele 4 scenarii pe axa $1-SS$ vs. $1-SC$ (100 case, 300 panouri)}
+  \label{fig:sim_b}
+\end{figure}
+
+Rezultatele pentru 100 de case cu 300 de panouri (Figura~\ref{fig:sim_b}) sunt aproape identice cu cele pentru 32 de case cu 100 de panouri. Scenariile ocupă aceleași poziții relative, cu 1-SS în jur de 0.56-0.60 și 1-SC în jur de 0.60-0.70, iar managerii community sunt din nou cei mai aproape de origine. La același raport de aproximativ trei panouri de fiecare casă, comportamentul sistemului nu depinde de dimensiunea comunității, deci rezultatele de la comunitatea mică se păstrează și la una de trei ori mai mare.
+
+În final, urmărim cum se comportă cele patru scenarii pe măsură ce comunitatea crește. Figurile~\ref{fig:scenarii_var} și~\ref{fig:scenarii_fix} arată câte zece configurații, de la 10 la 100 de case, din 10 în 10, fiecare cu cele patru scenarii. Cele două figuri diferă prin felul în care este dimensionată centrala. În Figura~\ref{fig:scenarii_var} numărul de panouri crește odată cu comunitatea, la aproximativ de trei ori numărul de case, deci fiecare comunitate își păstrează raportul favorabil. În Figura~\ref{fig:scenarii_fix} numărul de panouri rămâne fix, la 150, o valoare aleasă la mijlocul intervalului, fiindcă 150 de panouri se potrivesc unei comunități de 50 de case cu câte trei panouri de fiecare casă. Astfel putem urmări o centrală de dimensiune constantă în timp ce comunitatea din jurul ei crește de la 10 la 100 de case.
+
+\clearpage
+
+\clearpage
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.65\textwidth]{scenarii_panouri_variabile}}
+  \caption{Cele 4 scenarii pentru 10 comunități (10-100 case) cu panouri variabile (30-300)}
+  \label{fig:scenarii_var}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=0.65\textwidth]{scenarii_panouri_fixe}}
+  \caption{Cele 4 scenarii pentru 10 comunități (10-100 case) cu 150 de panouri fixe}
+  \label{fig:scenarii_fix}
+\end{figure}
+
+\clearpage
+
+În Figura~\ref{fig:scenarii_var}, pe măsură ce comunitatea crește de la 10 la 100 de case, cu un număr de panouri de aproximativ trei ori numărul de case, punctele se adună tot mai strâns. Comunitățile mici, de 10 sau 20 de case, sunt împrăștiate, fiindcă media pe puține case este mai zgomotoasă, iar cele mari converg către aceeași zonă. Separarea pe cele două grupuri se păstrează, cu managerii community mai jos și cei presence mai sus, deci ordinea scenariilor rămâne aceeași indiferent de dimensiune. La raport constant de panouri, o comunitate mai mare se comportă la fel ca una mică. Pentru managementul comunității, asta înseamnă că sistemul poate fi dimensionat pe o comunitate mică și apoi extins fără să fie regândit, atâta timp cât se păstrează raportul de panouri. Cu cât intră mai mulți membri, cu atât comportamentul fiecărei case valorează mai puțin în media comunității, deci câștigul adus de recomandări devine mai previzibil. Tocmai de aceea cele 32 de case folosite mai sus sunt un caz reprezentativ, iar concluziile se transferă și la comunități mai mari.
+
+În Figura~\ref{fig:scenarii_fix}, cu 150 de panouri fixe, dimensiunea comunității decide regimul centralei. La 10 case centrala este puternic supradimensionată, cu 1-SC în jur de 0.93, adică aproape toată producția se exportă. Pe măsură ce numărul de case crește, centrala devine treptat subdimensionată, iar autoconsumul urcă, 1-SC coborând spre 0.40 la 100 de case. Graficul arată direct trecerea de la supradimensionare la subdimensionare, pe măsură ce aceeași centrală deservește tot mai multe case. În jurul valorii de 50 de case, acolo unde cele 150 de panouri corespund raportului de trei panouri de fiecare casă, comunitatea atinge echilibrul, ceea ce confirmă încă o dată că dimensionarea trebuie raportată la mărimea comunității. Spre deosebire de Figura~\ref{fig:scenarii_var}, unde raportul rămânea constant și punctele se grupau în aceeași zonă, aici punctele se înșiră de-a lungul unei curbe, fiindcă centrala fixă rămâne aceeași în timp ce comunitatea crește, deci regimul ei se schimbă de la o dimensiune la alta.
+
+Pentru o comunitate care își construiește o centrală și apoi crește, asta înseamnă o evoluție în trei etape. La început, cu puține case, centrala pare generoasă, fiindcă produce mai mult decât consumă comunitatea și fiecare casă are energie din belșug. Ce nu se vede direct este că o mare parte din această producție se exportă neconsumată și se irosește. Apoi, comunitatea ajunge la echilibrul energetic, iar pe măsură ce intră tot mai multe case, consumul crește, iar centrala fixă nu mai face față. Surplusul scade, comunitatea acoperă o parte tot mai mică din consum din producția proprie și ajunge să se sprijine tot mai mult pe rețea, deci autonomia scade. Asta arată că centrala și comunitatea sunt strâns legate. Dimensiunea centralei nu este o decizie luată o singură dată, ci trebuie raportată mereu la numărul de case și ținută sub observație pe măsură ce comunitatea crește sau se restrânge. De asemenea, recomandările ajută în oricare dintre aceste regimuri, fiindcă apropie consumul de producție și s-au dovedit utile pe parcursul acestei lucrări, aducând posibile îmbunătățiri de 10-20\% pentru autonomie și autoconsum și o reducere a schimbului de energie cu rețeaua de până la aproximativ 20\%. Ele reglează sistemul, în timp ce mediul în care lucrează este stabilit de mărimea centralei raportată la comunitate.
 
 \clearpage
 
 \chapter*{5. Concluzii}
 \addcontentsline{toc}{chapter}{5. Concluzii}
 
-3 paragrafe:
+Lucrarea a pornit de la o problemă concretă a comunităților energetice. Producția unei centrale fotovoltaice comune și consumul locuințelor nu se potrivesc în timp, așa că multă energie solară pleacă în rețea neconsumată, iar comunitatea o cumpără înapoi mai târziu. Am propus un sistem care nu controlează aparatele, ci doar le trimite locatarilor recomandări voluntare de a-și muta consumul, și care ține cont de prezența reală și de cât de dispuși sunt oamenii să le urmeze.
 
-1. un rezumat mic al lucrarii + contributie
+Astfel, am modelat energetic comunitatea și am calculat indicatorii de autoconsum, autosuficiență, schimb cu rețeaua și rentabilitate, am dimensionat centrala comună cu Differential Evolution și am rulat o simulare multi-agent cu patru scenarii de comportament. Evaluarea s-a făcut pe o comunitate de 32 de locuințe, la mai multe dimensiuni de centrală, dar și de comunitate.
 
-2. limitari ale metodei propuse (ex: nu am date concrete de prezenta (am folosit 2 modele imaginate de mine))
+Rezultatele arată că recomandările îmbunătățesc autoconsumul și autosuficiența în toate configurațiile testate. Managerul care urmărește consumul agregat al comunității dă cele mai bune rezultate, cu un câștig la autoconsum care trece de 20\%, iar diferența față de managerul care se uită la prezență arată că filtrarea recomandărilor la nivelul comunității contează mai mult decât comportamentul fiecărei case. Un al doilea rezultat este că, la un raport fix de aproximativ trei panouri pe casă, comportamentul sistemului nu depinde de mărimea comunității, deci o comunitate poate crește fără să fie nevoie să refacem analiza. Dimensionarea centralei rămâne în schimb decisivă, fiindcă o centrală prea mică lasă comunitatea dependentă de rețea, iar una prea mare risipește producție, așa că echilibrul se află acolo unde producția este apropiată de consumul comunității.
 
-3. Dezvoltari ulterioare ale lucrarii
+Cea mai importantă contribuție a lucrării rămâne modelul de prezență, împreună cu ideea celor două tipuri de manager și de casă. Modelul de prezență deduce din consum când sunt oamenii acasă și ajunge la o acuratețe de aproximativ 77\% față de prezența dedusă din funcționarea aparatelor. Pe baza lui, managerul conștient de prezență și casa care aplică recomandările doar când cineva este acasă apropie simularea de felul în care ar funcționa sistemul în realitate, unde o recomandare trimisă într-o casă goală nu are cine să o pună în practică.
+
+Metoda are și câteva limitări care ar trebui menționate. Cea mai vizibilă vine din modelul de prezență. În setul de date nu există o evidență reală a prezenței, adică nimeni nu a notat la ce oră era cineva acasă, așa că am lucrat cu două modele gândite de mine. Unul estimează prezența din consumul total al casei, printr-un prag pe percentile, iar celălalt o deduce din numărul de aparate active la un moment dat. Acuratețea de aproximativ 77\% măsoară de fapt cât de bine se potrivesc cele două modele între ele, nu cât de aproape sunt de adevăr, fiindcă adevărul nu este cunoscut. Aproape una din patru ore cade în categorii diferite la cele două modele, deci uneori managerul crede că e cineva acasă când casa e goală și trimite o recomandare degeaba, iar alteori ratează o prezență liniștită, cu consum mic, și nu trimite nimic tocmai când ar fi fost util.
+
+Lipsa unor date reale de prezență nu este ușor de rezolvat. A cere fiecărui locatar un program orar cu momentele în care este sau nu acasă nu ar funcționa, fiindcă nu toți ar fi de acord să îl dea. Pentru mulți oameni o astfel de informație este sensibilă, iar a o împărtăși ar însemna ca alții să știe exact când locuința lor rămâne goală, ceea ce ridică o problemă de intimitate și de siguranță. Tocmai de aceea un sistem care estimează prezența din consum, cu erorile lui cu tot, rămâne o alegere mai realistă decât unul care le-ar cere oamenilor să își declare prezența.
+
+A doua limitare vine din felul în care este modelat efectul unei recomandări. Consumul orei este înmulțit cu un factor fix, 0.7 la reducere sau 1.3 la creștere, fără ca lucrarea să știe ce aparat anume pornește sau se oprește. Este o aproximare grosieră, fiindcă un locatar nu își micșorează sau mărește tot consumul deodată, ci amână un aparat specific sau o acțiune în sine. În plus, fiindcă reducerea dintr-o oră nu este mutată automat în alta, consumul total nu se conservă între scenarii, așa că valorile trebuie citite ca o estimare a efectului la nivel de comunitate.
+
+Mai sunt câteva ipoteze care influențează rezultatele. În scenariile probabilistice am presupus o rată de adoptare de 100\%, adică toți locatarii urmează mereu recomandarea. Asta ne arată cel mai bun caz posibil, câștigul maxim pe care îl poate aduce sistemul. În realitate însă nu toți urmează sfaturile, așa că într-o comunitate adevărată câștigul ar fi mai mic. O a doua ipoteză ține de date. Ele provin dintr-un singur set de locuințe, deci cifrele obținute rămân legate de tiparul de consum al acelui set și ar putea ieși diferit pentru o altă comunitate.
+
+Prima idee pentru îmbunătățiri ține de date. Modelul ar trebui testat pe măsurători mai apropiate de prezent, fiindcă obiceiurile de consum și aparatele din locuințe s-au schimbat mult față de setul folosit aici. Un sistem care urmează să fie pus în practică are nevoie de o estimare cât mai aproape de realitatea de azi, iar cu cât datele sunt mai recente și mai bine măsurate, cu atât pot fi prinse mai precis atât prezența, cât și efectul recomandărilor.
+
+A doua direcție, poate cea mai interesantă, este să coborâm de la consumul total la nivelul fiecărui aparat. Datele conțin deja consumul măsurat pe fiecare aparat, deci sistemul ar putea ști, la fiecare oră, ce anume merge într-o casă și ce este oprit. Cu această informație, recomandările ar putea fi țintite, nu globale. În loc să ceară unei case să își reducă pur și simplu consumul, sistemul ar putea sugera ca o anumită sarcină să fie mutată în altă parte a zilei, de pildă mașina de spălat pornită la prânz, când centrala produce, în loc de seara. Tot aici, ar putea face diferența între un aparat care poate fi amânat fără bătaie de cap, cum este mașina de spălat, și unul legat de confort, cum este aerul condiționat, pe care nu are sens să i-l ceri oprit într-o zi caniculară. La acest nivel de detaliu, recomandările ar fi mai aproape de ce poate face efectiv un locatar, fiindcă ar muta o sarcină concretă dintr-o oră în alta, în loc să scaleze uniform tot consumul casei.
+
+O a treia direcție, complementară celor de mai sus, este adăugarea unei baterii la centrala comunității. Recomandările mută consumul oamenilor, dar sunt limitate de cât sunt dispuși locatarii să își schimbe programul. O baterie mută în schimb energia, fără să depindă de comportamentul cuiva. Ea ar stoca surplusul produs la prânz, atunci când centrala generează mai mult decât consumă comunitatea, și l-ar elibera mai târziu, în orele de vârf când consumul depășește producția. Practic, bateria preia decalajul de timp pe care recomandările abia îl ating, iar cele două mecanisme s-ar întări reciproc, recomandările apropiind consumul de producție, iar bateria acoperind ce rămâne.
+
+Efectul asupra indicatorilor ar fi vizibil. Autosuficiența ar crește, fiindcă o parte mai mare din consum ar fi acoperită din producția proprie, stocată în loc să fie cumpărată înapoi din rețea. Autoconsumul ar crește și el, fiindcă mai puțin surplus s-ar exporta. NEEG ar scădea, fiindcă schimbul cu rețeaua, atât importul, cât și exportul, s-ar reduce. Practic, bateria ne ajută să conservăm energia produsă de panouri, iar în loc să facem mereu schimb cu rețeaua, putem consuma direct din ea atunci când producția nu ajunge.
+
+Bateria nu ar elimina însă complet rețeaua și nici nu este gratuită. Capacitatea ei este finită, așa că într-o zi foarte însorită se umple și surplusul tot se exportă, iar iarna, când producția scade săptămâni la rând, o baterie de dimensiune rezonabilă nu poate acoperi golul, deci rețeaua rămâne necesară. La asta se adaugă costul, ridicat la prețurile actuale, și degradarea în timp. O baterie ar îmbunătăți deci autoconsumul, autosuficiența și schimbul cu rețeaua, dar ar apăsa pe rentabilitate, ceea ce face din dimensionarea ei o problemă de optimizare în sine, un compromis între cât de independentă vrea să fie comunitatea de rețea și cât este dispusă să investească. Aceeași procedură de optimizare folosită pentru numărul de panouri ar putea fi extinsă ca să aleagă împreună numărul de panouri și capacitatea bateriei.
+
+În concluzie, lucrarea arată că o comunitate care împarte o centrală fotovoltaică își poate folosi mai bine energia prin recomandări voluntare, fără să controleze aparatele oamenilor. Sistemul de recomandări îmbunătățește autoconsumul și autosuficiența în toate configurațiile testate, iar cel mai bine lucrează managerul care privește comunitatea ca întreg. Câștigul real depinde însă de două lucruri pe care lucrarea le scoate în evidență, anume cât de bine este dimensionată centrala față de comunitate și cât de mulți locatari urmează efectiv recomandările. Modelul de prezență și cele patru scenarii apropie simularea de condițiile reale, iar limitele rămase, de la estimarea prezenței până la aproximarea efectului recomandărilor asupra consumului, arată chiar unde poate fi dus sistemul mai departe, prin date mai recente, recomandări la nivel de aparat și o baterie care ar ajuta comunitatea să depindă din ce în ce mai puțin de rețea.
 
 \clearpage
 
 \renewcommand{\bibname}{6. Bibliografie}
 \begin{thebibliography}{00}
-\addcontentsline{toc}{chapter}{6. Bibliografie}
+  \addcontentsline{toc}{chapter}{6. Bibliografie}
 
-\bibitem{simoiu2021jcp}
-M.~S.~Simoiu, I.~Fagarasan, S.~Ploix, and V.~Calofir,
-``Optimising the self-consumption and self-sufficiency: A novel approach for adequately sizing a photovoltaic plant with application to a metropolitan station,''
-\emph{Journal of Cleaner Production}, vol.~327, Art.~no.~129399, 2021.
+  \bibitem{simoiu2021jcp}
+  M.~S.~Simoiu, I.~Fagarasan, S.~Ploix, and V.~Calofir,
+  ``Optimising the self-consumption and self-sufficiency: A novel approach for adequately sizing a photovoltaic plant with application to a metropolitan station,''
+  \emph{Journal of Cleaner Production}, vol.~327, Art.~no.~129399, 2021.
 
-\bibitem{murphy2012ml}
-K.~P.~Murphy, \emph{Machine Learning: A Probabilistic Perspective}.
-Cambridge, MA, USA: MIT Press, 2012.
 
-\bibitem{duffie2020solar}
-J.~A.~Duffie, W.~A.~Beckman, and N.~Blair,
-\emph{Solar Engineering of Thermal Processes, Photovoltaics and Wind}, 5th~ed.
-Hoboken, NJ, USA: Wiley, 2020.
+  \bibitem{murphy2012ml}
+  K.~P.~Murphy, \emph{Machine Learning: A Probabilistic Perspective}.
+  Cambridge, MA, USA: MIT Press, 2012.
 
-\bibitem{barabino2023energycommunities}
-E.~Barabino, D.~Fioriti, E.~Guerrazzi, I.~Mariuzzo, D.~Poli, M.~Raugi, E.~Rezaei, E.~Schito, and D.~Thomopulos,
-``Energy communities: A review on trends, energy system modelling, business models, and optimisation objectives,''
-\emph{Sustainable Energy, Grids and Networks}, vol.~36, Art.~no.~101187, 2023.
+  \bibitem{duffie2020solar}
+  J.~A.~Duffie, W.~A.~Beckman, and N.~Blair,
+  \emph{Solar Engineering of Thermal Processes, Photovoltaics and Wind}, 5th~ed.
+  Hoboken, NJ, USA: Wiley, 2020.
 
-\bibitem{simoiu2022aqtr}
-M.~S.~Simoiu, I.~Fagarasan, S.~Ploix, V.~Calofir, and S.~S.~Iliescu,
-``Towards energy communities: A multi-agent case study,''
-in \emph{Proc. IEEE Int. Conf. Automation, Quality and Testing, Robotics (AQTR)},
-Cluj-Napoca, Romania, 2022, pp.~1--6.
+  \bibitem{barabino2023energycommunities}
+  E.~Barabino, D.~Fioriti, E.~Guerrazzi, I.~Mariuzzo, D.~Poli, M.~Raugi, E.~Razaei, E.~Schito, and D.~Thomopulos,
+  ``Energy communities: A review on trends, energy system modelling, business models, and optimisation objectives,''
+  \emph{Sustainable Energy, Grids and Networks}, vol.~36, Art.~no.~101187, 2023.
 
-\bibitem{simoiu2022renewable}
-M.~S.~Simoiu, I.~Fagarasan, S.~Ploix, and V.~Calofir,
-``Modeling the energy community members' willingness to change their behaviour with multi-agent systems: A stochastic approach,''
-\emph{Renewable Energy}, vol.~194, pp.~1233--1246, 2022.
+  \bibitem{simoiu2022aqtr}
+  M.~S.~Simoiu, I.~Fagarasan, S.~Ploix, V.~Calofir, and S.~S.~Iliescu,
+  ``Towards energy communities: A multi-agent case study,''
+  in \emph{Proc. IEEE Int. Conf. Automation, Quality and Testing, Robotics (AQTR)},
+  Cluj-Napoca, Romania, 2022, pp.~1-6.
+
+  \bibitem{simoiu2022renewable}
+  M.~S.~Simoiu, I.~Fagarasan, S.~Ploix, and V.~Calofir,
+  ``Modeling the energy community members' willingness to change their behaviour with multi-agent systems: A stochastic approach,''
+  \emph{Renewable Energy}, vol.~194, pp.~1233-1246, 2022.
+
+  \bibitem{europeansolarstrategy2022}
+  European Commission,
+  ``EU Solar Energy Strategy,''
+  COM(2022) 221 final, Brussels, Belgium, May 2022. [Online]. Available: \url{https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=COM:2022:221:FIN} (accesat la 11 mai 2026)
+
+  \bibitem{ieapvps2024}
+  G.~Masson, E.~Bosch, A.~Van~Rechem, and M.~de~l'Epine,
+  \emph{Snapshot of Global PV Markets 2024}.
+  IEA Photovoltaic Power Systems Programme (IEA PVPS), Apr.~2024, ISBN 978-3-907281-55-0. [Online]. Available: \url{https://iea-pvps.org/snapshot-reports/snapshot-2024/} (accesat la 12 martie 2026)
+
+  \bibitem{globalsolaratlas2020}
+  World Bank Group / Solargis,
+  \emph{Global Solar Atlas 2.0}.
+  Washington, DC, USA: World Bank, 2020. [Online]. Available: \url{https://globalsolaratlas.info} (accesat la 22 mai 2026)
+
+  \bibitem{stornprice1997}
+  R.~Storn and K.~Price,
+  ``Differential evolution: a simple and efficient heuristic for global optimization over continuous spaces,''
+  \emph{Journal of Global Optimization}, vol.~11, no.~4, pp.~341-359, 1997.
+
+  \bibitem{kazil2020mesa}
+  J.~Kazil, D.~Masad, and A.~Crooks,
+  ``Utilizing Python for agent-based modeling: The Mesa framework,''
+  in \emph{Social, Cultural, and Behavioral Modeling (SBP-BRiMS 2020)}, vol.~12268 of \emph{Lecture Notes in Computer Science}.
+  Cham, Switzerland: Springer, 2020, pp.~308-317.
+
+  \bibitem{irise2025}
+  S.~Ploix,
+  ``Electricity consumption of houses in Isère with a 10-minute resolution,''
+  Zenodo, dataset, May 2025. [Online]. Available: \url{https://zenodo.org/records/15499551} (accesat la 13 februarie 2026)
 
 \end{thebibliography}
-
-\clearpage
-
-\chapter*{7. Lista contribuțiilor personale}
-\addcontentsline{toc}{chapter}{7. Lista contribuțiilor personale}
 
 \end{document}

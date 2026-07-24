@@ -10,6 +10,7 @@ class PresenceModel(EnergyProcessing):
         super().__init__(house_id)
         self.presence_data = {}  # Dictionar cu timestamp si prezenta (True/False)
         self.consumption_threshold = 0.0  # Prag minim de consum pentru prezenta
+        self.presence_accuracy = 0.0  # Acuratete perceptie vs prezenta reala (%)
     
     def evaluate_presence_for_date(self, date_str, percentile = 40, verbose = True): # Evalueaza prezenta in casa pentru o zi specifica (perceptia managerului)
         if not self.consumption:
@@ -198,4 +199,177 @@ class PresenceModel(EnergyProcessing):
             print(f"\nSTATISTICI: {total_hours} ore analizate | {hours_present} prezent ({presence_percentage:.1f}%) | {hours_absent} absent ({100 - presence_percentage:.1f}%)\n")
         
         return presence_results
+
+    def calculate_presence_accuracy_from_data(self, manager_presence, real_presence, verbose=True):
+        common_timestamps = sorted(set(manager_presence.keys()) & set(real_presence.keys()))
+        if not common_timestamps:
+            self.presence_accuracy = 0.0
+            return {
+                "accuracy_pct": 0.0,
+                "total_points": 0,
+                "agreements": 0,
+                "true_positive": 0,
+                "true_negative": 0,
+                "false_positive": 0,
+                "false_negative": 0,
+                "manager_presence_hours": 0,
+                "real_presence_hours": 0,
+            }
+
+        tp = tn = fp = fn = 0
+        for t in common_timestamps:
+            predicted = manager_presence[t]
+            actual = real_presence[t]
+
+            if predicted and actual:
+                tp += 1
+            elif (not predicted) and (not actual):
+                tn += 1
+            elif predicted and (not actual):
+                fp += 1
+            else:
+                fn += 1
+
+        agreements = tp + tn
+        total = len(common_timestamps)
+        accuracy_pct = (agreements / total) * 100
+
+        manager_hours = sum(1 for t in common_timestamps if manager_presence[t])
+        real_hours = sum(1 for t in common_timestamps if real_presence[t])
+
+        self.presence_accuracy = accuracy_pct
+
+        if verbose:
+            print(f"Acuratete perceptie vs real: {accuracy_pct:.2f}% ({agreements}/{total})")
+            print(f"TP: {tp} | TN: {tn} | FP: {fp} | FN: {fn}")
+            print(f"Ore percepute prezente: {manager_hours} | Ore prezenta reala: {real_hours}")
+
+        return {
+            "accuracy_pct": accuracy_pct,
+            "total_points": total,
+            "agreements": agreements,
+            "true_positive": tp,
+            "true_negative": tn,
+            "false_positive": fp,
+            "false_negative": fn,
+            "manager_presence_hours": manager_hours,
+            "real_presence_hours": real_hours,
+        }
+
+    def calculate_presence_accuracy_for_date(self, date_str, percentile=40, min_active_appliances=2, verbose=True):
+        manager_presence = self.evaluate_presence_for_date(date_str, percentile=percentile, verbose=False)
+        real_presence = self.evaluate_real_presence_for_date(date_str, min_active_appliances=min_active_appliances, verbose=False)
+
+        accuracy_stats = self.calculate_presence_accuracy_from_data(manager_presence, real_presence, verbose=False)
+        if accuracy_stats["total_points"] == 0:
+            if verbose:
+                print(f"Nu exista timestamp-uri comune pentru calculul acuratetii prezentei la data {date_str}.")
+            return accuracy_stats
+
+        if verbose:
+            print(f"\nACURATETE PREZENTA - Casa {self.house_id} - {date_str}")
+            self.calculate_presence_accuracy_from_data(manager_presence, real_presence, verbose=True)
+
+        return accuracy_stats
+
+    def _calculate_for_house(self, house_model, percentile, min_active_appliances):
+        all_dates = sorted({
+            datetime.fromtimestamp(t).strftime("%Y-%m-%d")
+            for t in house_model.consumption.keys()
+        })
+
+        tp = tn = fp = fn = 0
+        total_points = agreements = days = 0
+
+        for date_str in all_dates:
+            daily_stats = house_model.calculate_presence_accuracy_for_date(
+                date_str,
+                percentile=percentile,
+                min_active_appliances=min_active_appliances,
+                verbose=False,
+            )
+            if daily_stats["total_points"] == 0:
+                continue
+            days += 1
+            total_points += daily_stats["total_points"]
+            agreements += daily_stats["agreements"]
+            tp += daily_stats["true_positive"]
+            tn += daily_stats["true_negative"]
+            fp += daily_stats["false_positive"]
+            fn += daily_stats["false_negative"]
+
+        return {
+            "total_points": total_points,
+            "agreements": agreements,
+            "days_analyzed": days,
+            "true_positive": tp,
+            "true_negative": tn,
+            "false_positive": fp,
+            "false_negative": fn,
+        }
+
+    def calculate_presence_accuracy_for_all_data(self, percentile=40, min_active_appliances=2, verbose=True):
+        data_cache = DataDictionaries(verbose=False)
+        all_house_ids = sorted(data_cache.get_all_houses().keys())
+
+        global_tp = global_tn = global_fp = global_fn = 0
+        global_total = global_agreements = global_days = 0
+        houses_analyzed = 0
+
+        for house_id in all_house_ids:
+            house_model = PresenceModel(house_id)
+
+            if not house_model.consumption:
+                if verbose:
+                    print(f"\nCasa {house_id}: Nu exista date de consum.")
+                continue
+
+            stats = self._calculate_for_house(house_model, percentile, min_active_appliances)
+
+            if stats["total_points"] == 0:
+                continue
+
+            houses_analyzed += 1
+            house_accuracy = (stats["agreements"] / stats["total_points"]) * 100
+
+            global_tp += stats["true_positive"]
+            global_tn += stats["true_negative"]
+            global_fp += stats["false_positive"]
+            global_fn += stats["false_negative"]
+            global_total += stats["total_points"]
+            global_agreements += stats["agreements"]
+            global_days += stats["days_analyzed"]
+
+            if verbose:
+                loc = data_cache.get_house(house_id).get("location", "?")
+                print(f"\n--- Casa {house_id} ({loc}) ---")
+                print(f"  Acuratete: {house_accuracy:.2f}% ({stats['agreements']}/{stats['total_points']})")
+                print(f"  TP: {stats['true_positive']} | TN: {stats['true_negative']} | FP: {stats['false_positive']} | FN: {stats['false_negative']}")
+                print(f"  Zile analizate: {stats['days_analyzed']}")
+
+        global_accuracy = (global_agreements / global_total) * 100 if global_total > 0 else 0.0
+        self.presence_accuracy = global_accuracy
+
+        if verbose:
+            print(f"\n{'=' * 60}")
+            print(f"ACURATETE GLOBALA - TOATE CASELE ({houses_analyzed} case)")
+            print(f"{'=' * 60}")
+            print(f"Acuratete globala:                               {global_accuracy:.2f}% ({global_agreements}/{global_total})")
+            print(f"True Positive  (ore prezente corect detectate):  {global_tp}")
+            print(f"True Negative  (ore absente corect detectate):   {global_tn}")
+            print(f"False Positive (ore goale marcate ca ocupate):   {global_fp}")
+            print(f"False Negative (ore ocupate ratate):             {global_fn}")
+            print(f"Zile analizate:                                  {global_days}")
+
+        return {
+            "accuracy_pct": global_accuracy,
+            "total_points": global_total,
+            "agreements": global_agreements,
+            "days_analyzed": global_days,
+            "houses_analyzed": houses_analyzed,
+            "true_positive": global_tp,
+            "true_negative": global_tn,
+            "false_positive": global_fp,
+            "false_negative": global_fn,
+        }
 
