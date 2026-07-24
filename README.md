@@ -27,6 +27,3 @@ Due to GitHub's **100 MB file size limit**, the following dataset file could not
 ```text
 Database/Consumption.csv
 ```
-
-To run the project, place the `Consumption.csv` file inside the `Database` directory.
-````
